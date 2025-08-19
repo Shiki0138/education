@@ -12,8 +12,8 @@ class EmailReportSystem {
         const today = new Date().toDateString();
         const dailyData = this.getDailyStudyData();
 
-        // 1日の目標達成判定（60分以上または問題数20問以上）
-        const goalAchieved = dailyData.studyMinutes >= 60 || dailyData.totalQuestions >= 20;
+        // 1日の目標達成判定（30分以上または問題数12問以上）
+        const goalAchieved = dailyData.studyMinutes >= 30 || dailyData.totalQuestions >= 12;
         
         if (goalAchieved && !dailyData.emailSent) {
             this.sendDailyReport(dailyData);

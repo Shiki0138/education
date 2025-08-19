@@ -38,24 +38,24 @@ class DailyScheduleManager {
         const effectiveDays = Math.floor(this.remainingDays * safetyMargin);
         
         const dailyTargets = {
-            // 基本課題（毎日必須）
-            kanjiProblems: Math.ceil(this.totalGoals.kanjiProblems / effectiveDays),
-            readingProblems: Math.ceil(this.totalGoals.readingTexts / effectiveDays),
-            grammarProblems: Math.ceil(this.totalGoals.grammarProblems / effectiveDays),
+            // 基本課題（毎日必須・30分完了量）
+            kanjiProblems: 4,        // 漢字4問（12分）
+            readingProblems: 1,      // 読解1問（12分）
+            grammarProblems: 2,      // 文法2問（4分）
             
             // 週単位課題
-            writingProblems: Math.ceil(this.totalGoals.writingProblems / (effectiveDays / 7)),
-            vocabularyProblems: Math.ceil(this.totalGoals.vocabularyProblems / effectiveDays),
+            writingProblems: 1,      // 記述1問（週2回程度）
+            vocabularyProblems: 2,   // 語彙2問（2分）
             
-            // 推奨学習時間
-            totalMinutes: 60,
+            // 推奨学習時間（30分に短縮）
+            totalMinutes: 30,
             
             // 分野別時間配分
             timeAllocation: {
-                kanji: 20,      // 漢字20分
-                reading: 25,    // 読解25分  
-                grammar: 10,    // 文法10分
-                writing: 5      // 記述5分（週に2-3回は15分）
+                kanji: 12,      // 漢字12分
+                reading: 12,    // 読解12分  
+                grammar: 4,     // 文法4分
+                writing: 2      // 記述2分（週に2-3回は8分）
             }
         };
 
@@ -97,52 +97,59 @@ class DailyScheduleManager {
         return {
             Monday: {
                 focus: "漢字強化",
-                kanji: dailyTargets.kanjiProblems + 2,
-                reading: dailyTargets.readingProblems,
-                grammar: dailyTargets.grammarProblems,
-                writing: 0
+                kanji: 5,       // 漢字5問（15分）
+                reading: 1,     // 読解1問（12分）
+                grammar: 1,     // 文法1問（3分）
+                writing: 0,     // 合計30分
+                estimatedTime: 30
             },
             Tuesday: {
-                focus: "読解集中",
-                kanji: dailyTargets.kanjiProblems,
-                reading: dailyTargets.readingProblems + 1,
-                grammar: dailyTargets.grammarProblems,
-                writing: 0
+                focus: "読解集中", 
+                kanji: 3,       // 漢字3問（9分）
+                reading: 2,     // 読解2問（18分）
+                grammar: 1,     // 文法1問（3分）
+                writing: 0,     // 合計30分
+                estimatedTime: 30
             },
             Wednesday: {
                 focus: "記述練習",
-                kanji: dailyTargets.kanjiProblems,
-                reading: dailyTargets.readingProblems,
-                grammar: dailyTargets.grammarProblems,
-                writing: 2
+                kanji: 3,       // 漢字3問（9分）
+                reading: 1,     // 読解1問（12分）
+                grammar: 1,     // 文法1問（3分）
+                writing: 1,     // 記述1問（6分）
+                estimatedTime: 30
             },
             Thursday: {
                 focus: "文法・語彙",
-                kanji: dailyTargets.kanjiProblems,
-                reading: dailyTargets.readingProblems,
-                grammar: dailyTargets.grammarProblems + 3,
-                writing: 0
+                kanji: 3,       // 漢字3問（9分）
+                reading: 1,     // 読解1問（12分）
+                grammar: 3,     // 文法3問（9分）
+                writing: 0,     // 合計30分
+                estimatedTime: 30
             },
             Friday: {
                 focus: "総合演習",
-                kanji: dailyTargets.kanjiProblems,
-                reading: dailyTargets.readingProblems,
-                grammar: dailyTargets.grammarProblems,
-                writing: 1
+                kanji: 4,       // 漢字4問（12分）
+                reading: 1,     // 読解1問（12分）
+                grammar: 2,     // 文法2問（6分）
+                writing: 0,     // 合計30分
+                estimatedTime: 30
             },
             Saturday: {
                 focus: "弱点強化",
-                kanji: dailyTargets.kanjiProblems + 3,
-                reading: dailyTargets.readingProblems + 1,
-                grammar: dailyTargets.grammarProblems + 2,
-                writing: 1
+                kanji: 4,       // 漢字4問（12分）
+                reading: 2,     // 読解2問（16分）
+                grammar: 1,     // 文法1問（2分）
+                writing: 0,     // 合計30分
+                estimatedTime: 30
             },
             Sunday: {
                 focus: "復習・まとめ",
-                kanji: dailyTargets.kanjiProblems,
-                reading: dailyTargets.readingProblems,
-                grammar: dailyTargets.grammarProblems,
-                writing: 1
+                kanji: 3,       // 漢字3問（9分）
+                reading: 1,     // 読解1問（12分）
+                grammar: 2,     // 文法2問（6分）
+                writing: 1,     // 記述1問（3分）
+                estimatedTime: 30
             }
         };
     }

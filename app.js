@@ -38,7 +38,7 @@ function updateUI() {
         : 0;
     document.getElementById('accuracyRate').textContent = accuracy;
     
-    const progressPercentage = Math.min((userData.studyMinutesToday / 60) * 100, 100);
+    const progressPercentage = Math.min((userData.studyMinutesToday / 30) * 100, 100);
     document.getElementById('dailyProgress').style.width = progressPercentage + '%';
 }
 
