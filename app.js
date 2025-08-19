@@ -122,18 +122,21 @@ function showKanjiQuestion() {
     
     // 事前に選択された問題を順次出題
     const questionIndex = currentKanjiSession[currentKanjiIndex];
-    const question = kanjiQuestions[questionIndex];
+    const originalQuestion = kanjiQuestions[questionIndex];
     
-    if (!question) {
+    if (!originalQuestion) {
         console.error('問題が見つかりません:', questionIndex);
         finishKanjiPractice();
         return;
     }
     
-    document.getElementById('kanjiQuestion').textContent = question.question;
+    // 毎回選択肢をランダム化（正解位置も変更）
+    const randomizedQuestion = randomizeQuestionOptions(originalQuestion);
     
-    const optionsHTML = question.options.map((option, index) => 
-        `<button onclick="checkKanjiAnswer(${index})">${index + 1}. ${option}</button>`
+    document.getElementById('kanjiQuestion').textContent = randomizedQuestion.question;
+    
+    const optionsHTML = randomizedQuestion.options.map((option, index) => 
+        `<button onclick="checkKanjiAnswer(${index}, ${randomizedQuestion.correct})">${index + 1}. ${option}</button>`
     ).join('');
     
     document.getElementById('kanjiOptions').innerHTML = optionsHTML;
@@ -141,13 +144,37 @@ function showKanjiQuestion() {
     document.getElementById('kanjiHint').textContent = '';
 }
 
+// 選択肢ランダム化関数
+function randomizeQuestionOptions(question) {
+    const correctAnswer = question.options[question.correct];
+    const shuffledOptions = [...question.options];
+    
+    // Fisher-Yatesシャッフル
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    
+    // 新しい正解位置を見つける
+    const newCorrectIndex = shuffledOptions.indexOf(correctAnswer);
+    
+    return {
+        ...question,
+        options: shuffledOptions,
+        correct: newCorrectIndex
+    };
+}
+
 // 漢字の答え合わせ
-function checkKanjiAnswer(selected) {
+function checkKanjiAnswer(selected, correctIndex = null) {
     const questionIndex = currentKanjiSession[currentKanjiIndex];
-    const question = kanjiQuestions[questionIndex];
+    const originalQuestion = kanjiQuestions[questionIndex];
     const buttons = document.querySelectorAll('#kanjiOptions button');
     
-    if (selected === question.correct) {
+    // correctIndexが渡された場合はそれを使用、なければ元の問題の正解を使用
+    const correctAnswer = correctIndex !== null ? correctIndex : originalQuestion.correct;
+    
+    if (selected === correctAnswer) {
         buttons[selected].classList.add('correct');
         kanjiScore += 10;
         userData.correctAnswers++;
@@ -161,7 +188,7 @@ function checkKanjiAnswer(selected) {
         }, 1000);
     } else {
         buttons[selected].classList.add('incorrect');
-        buttons[question.correct].classList.add('correct');
+        buttons[correctAnswer].classList.add('correct');
         userData.questionsAnswered++;
         
         setTimeout(() => {
@@ -175,11 +202,54 @@ function checkKanjiAnswer(selected) {
     updateUI();
 }
 
+// デバッグ関数
+function debugCurrentQuestion() {
+    const questionIndex = currentKanjiSession[currentKanjiIndex];
+    const question = kanjiQuestions[questionIndex];
+    
+    console.log('🔍 現在の問題デバッグ情報:');
+    console.log('- セッション内位置:', currentKanjiIndex + 1);
+    console.log('- データベース内インデックス:', questionIndex);
+    console.log('- 問題ID:', question.id);
+    console.log('- 問題文:', question.question);
+    console.log('- 正解位置:', question.correct);
+    console.log('- 選択肢:', question.options);
+    console.log('- 正解文:', question.options[question.correct]);
+    
+    alert(`🔍 デバッグ情報\n問題ID: ${question.id}\n正解位置: ${question.correct + 1}番目\n正解: ${question.options[question.correct]}`);
+}
+
+// 選択肢ランダム化関数
+function randomizeQuestionOptions(question) {
+    const correctAnswer = question.options[question.correct];
+    const shuffledOptions = [...question.options];
+    
+    // Fisher-Yatesシャッフル
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    
+    // 新しい正解位置を見つける
+    const newCorrectIndex = shuffledOptions.indexOf(correctAnswer);
+    
+    console.log(`🎲 選択肢ランダム化: ${question.question}`);
+    console.log(`- 元正解位置: ${question.correct + 1}番目 (${correctAnswer})`);
+    console.log(`- 新正解位置: ${newCorrectIndex + 1}番目`);
+    console.log(`- 新選択肢順:`, shuffledOptions);
+    
+    return {
+        ...question,
+        options: shuffledOptions,
+        correct: newCorrectIndex
+    };
+}
+
 // ヒント表示
 function showKanjiHint() {
     const questionIndex = currentKanjiSession[currentKanjiIndex];
     const question = kanjiQuestions[questionIndex];
-    document.getElementById('kanjiHint').textContent = question.hint || "この問題について考えてみましょう。";
+    document.getElementById('kanjiHint').textContent = question.hint || question.explanation || "この問題について考えてみましょう。";
     document.getElementById('kanjiHint').classList.add('show');
 }
 
@@ -542,16 +612,23 @@ window.addEventListener('DOMContentLoaded', () => {
     loadUserData();
     updateDateDisplay();
     
-    // 漢字問題データベースの確認
+    // 漢字問題データベースの確認と正解位置ランダム化
     console.log('漢字問題データベース読み込み状況:');
     console.log('- 問題総数:', kanjiQuestions.length);
     console.log('- 最初の3問:', kanjiQuestions.slice(0, 3).map(q => ({
         id: q.id,
-        question: q.question
+        question: q.question,
+        correct: q.correct
     })));
     
     if (kanjiQuestions.length < 10) {
         console.warn('⚠️ 漢字問題が10問未満です。データベースの読み込みを確認してください。');
+    }
+    
+    // 正解位置をランダム化
+    if (typeof applyRandomization === 'function') {
+        applyRandomization();
+        console.log('✅ 正解位置ランダム化完了');
     }
     
     // 1分ごとに学習時間を更新
