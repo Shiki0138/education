@@ -99,96 +99,42 @@ function showSimpleAnswerEffect(isCorrect, correctAnswer, explanation, questionT
     }, 2500);
 }
 
-// キラキラエフェクト
+// 控えめなキラキラエフェクト
 function createSparkleEffect() {
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
         setTimeout(() => {
             const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle-effect';
             sparkle.style.cssText = `
                 position: fixed;
-                top: ${Math.random() * 100}%;
-                left: ${Math.random() * 100}%;
-                font-size: 30px;
+                top: ${Math.random() * 50 + 25}%;
+                left: ${Math.random() * 50 + 25}%;
+                font-size: 20px;
                 z-index: 9999;
                 pointer-events: none;
-                animation: sparkleAnimation 2s ease-out forwards;
+                color: #42a5f5;
             `;
-            sparkle.textContent = ['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)];
-
-            const sparkleStyle = document.createElement('style');
-            sparkleStyle.textContent = `
-                @keyframes sparkleAnimation {
-                    0% {
-                        opacity: 0;
-                        transform: scale(0) rotate(0deg);
-                    }
-                    50% {
-                        opacity: 1;
-                        transform: scale(1) rotate(180deg);
-                    }
-                    100% {
-                        opacity: 0;
-                        transform: scale(0.5) rotate(360deg);
-                    }
-                }
-            `;
-            document.head.appendChild(sparkleStyle);
+            sparkle.textContent = ['✨', '⭐'][Math.floor(Math.random() * 2)];
 
             document.body.appendChild(sparkle);
 
             setTimeout(() => {
                 sparkle.remove();
-                sparkleStyle.remove();
-            }, 2000);
-        }, i * 100);
+            }, 1500);
+        }, i * 150);
     }
 }
 
-// ポイント表示エフェクト
+// 控えめなポイント表示
 function showPointsEffect(points) {
     const pointsEl = document.createElement('div');
-    pointsEl.style.cssText = `
-        position: fixed;
-        top: 30%;
-        right: 20px;
-        font-size: 28px;
-        font-weight: bold;
-        color: #00b894;
-        z-index: 9999;
-        pointer-events: none;
-        animation: pointsAnimation 2s ease-out forwards;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        background: rgba(255,255,255,0.9);
-        padding: 10px 20px;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,184,148,0.3);
-    `;
-    pointsEl.textContent = `+${points}pt! ✨`;
-
-    const pointsStyle = document.createElement('style');
-    pointsStyle.textContent = `
-        @keyframes pointsAnimation {
-            0% {
-                opacity: 0;
-                transform: translateY(0) scale(0.5);
-            }
-            30% {
-                opacity: 1;
-                transform: translateY(-20px) scale(1.2);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-60px) scale(1);
-            }
-        }
-    `;
-    document.head.appendChild(pointsStyle);
+    pointsEl.className = 'points-effect';
+    pointsEl.textContent = `+${points}pt!`;
 
     document.body.appendChild(pointsEl);
 
     setTimeout(() => {
         pointsEl.remove();
-        pointsStyle.remove();
     }, 2000);
 }
 
@@ -277,9 +223,8 @@ function playSimpleIncorrectSound() {
     }, 1000);
 }
 
-// 30分完了時の大演出
+// 30分完了時の上品な演出
 function showThirtyMinuteComplete() {
-    // 大きな完了メッセージ
     const completion = document.createElement('div');
     completion.style.cssText = `
         position: fixed;
@@ -287,36 +232,40 @@ function showThirtyMinuteComplete() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 10000;
-        animation: completionFade 0.5s ease-out;
+        animation: completionFade 0.4s ease-out;
     `;
 
+    const todayAccuracy = userData.questionsAnsweredToday > 0 
+        ? Math.round((userData.correctAnswersToday / userData.questionsAnsweredToday) * 100) 
+        : 0;
+
     completion.innerHTML = `
-        <div style="background: linear-gradient(135deg, #fd79a8, #fdcb6e); 
-                    color: white; padding: 50px; border-radius: 25px; 
-                    text-align: center; max-width: 400px; 
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-                    animation: completionPop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
-            <div style="font-size: 100px; margin-bottom: 20px;">🏆</div>
-            <div style="font-size: 32px; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                すごい！<br>今日の勉強完了！
+        <div style="background: linear-gradient(135deg, #1976d2, #1565c0); 
+                    color: white; padding: 40px; border-radius: 20px; 
+                    text-align: center; max-width: 350px; 
+                    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+                    animation: completionPop 0.6s ease-out;">
+            <div style="font-size: 70px; margin-bottom: 20px;">🏆</div>
+            <div style="font-size: 24px; font-weight: bold; margin-bottom: 15px;">
+                お疲れさま！<br>今日の学習完了！
             </div>
-            <div style="font-size: 18px; margin-bottom: 20px;">
-                🎯 正答率: ${userData.questionsAnsweredToday > 0 ? Math.round((userData.correctAnswersToday / userData.questionsAnsweredToday) * 100) : 0}%<br>
-                ⭐ 獲得ポイント: ${userData.totalPoints}pt<br>
+            <div style="font-size: 16px; margin-bottom: 20px; opacity: 0.9;">
+                🎯 正答率: ${todayAccuracy}%<br>
+                ⭐ ポイント: ${userData.totalPoints}pt<br>
                 🔥 連続: ${userData.streakDays}日
             </div>
-            <button onclick="this.parentElement.parentElement.remove(); createConfettiRain();" 
-                    style="background: rgba(255,255,255,0.9); color: #fd79a8; border: none; 
-                           border-radius: 15px; padding: 15px 30px; font-size: 18px; 
+            <button onclick="this.parentElement.parentElement.remove();" 
+                    style="background: rgba(255,255,255,0.9); color: #1976d2; border: none; 
+                           border-radius: 12px; padding: 12px 25px; font-size: 16px; 
                            font-weight: bold; cursor: pointer; 
-                           box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                            transition: all 0.3s ease;">
-                🎉 やったー！
+                明日も頑張る！ 💪
             </button>
         </div>
     `;
@@ -328,25 +277,25 @@ function showThirtyMinuteComplete() {
             to { opacity: 1; }
         }
         @keyframes completionPop {
-            0% { opacity: 0; transform: scale(0.3) rotate(-10deg); }
-            50% { opacity: 1; transform: scale(1.1) rotate(5deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
         }
     `;
     document.head.appendChild(completionStyles);
 
     document.body.appendChild(completion);
 
-    // 花火エフェクト
-    createFireworks();
+    // 控えめな星エフェクト
+    if (typeof createGentleStarEffect === 'function') {
+        createGentleStarEffect();
+    }
 
-    // 5秒後に自動で閉じる
     setTimeout(() => {
         if (completion.parentNode) {
             completion.remove();
         }
         completionStyles.remove();
-    }, 5000);
+    }, 4000);
 }
 
 // 花火エフェクト
@@ -558,6 +507,43 @@ function showLevelUpAnimation() {
     }, 2000);
 }
 
+// 控えめな星エフェクト（30分完了時用）
+function createGentleStarEffect() {
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            const star = document.createElement('div');
+            star.style.cssText = `
+                position: fixed;
+                top: ${Math.random() * 60 + 20}%;
+                left: ${Math.random() * 80 + 10}%;
+                font-size: 24px;
+                color: #ffd54f;
+                z-index: 9998;
+                pointer-events: none;
+                animation: gentleStarTwinkle 2s ease-out forwards;
+            `;
+            star.textContent = ['⭐', '✨'][Math.floor(Math.random() * 2)];
+
+            const starStyle = document.createElement('style');
+            starStyle.textContent = `
+                @keyframes gentleStarTwinkle {
+                    0% { opacity: 0; transform: scale(0); }
+                    50% { opacity: 1; transform: scale(1.1); }
+                    100% { opacity: 0; transform: scale(0.8); }
+                }
+            `;
+            document.head.appendChild(starStyle);
+
+            document.body.appendChild(star);
+
+            setTimeout(() => {
+                star.remove();
+                starStyle.remove();
+            }, 2000);
+        }, i * 250);
+    }
+}
+
 // グローバル関数として登録
 window.showSimpleAnswerEffect = showSimpleAnswerEffect;
 window.createConfettiRain = createConfettiRain;
@@ -566,6 +552,7 @@ window.showMascotMessage = showMascotMessage;
 window.showStartMotivation = showStartMotivation;
 window.showLevelUpAnimation = showLevelUpAnimation;
 window.showThirtyMinuteComplete = showThirtyMinuteComplete;
+window.createGentleStarEffect = createGentleStarEffect;
 
 // 連続正解カウンター
 let consecutiveCorrect = 0;
