@@ -5,8 +5,11 @@ let userData = {
     streakDays: 0,
     lastStudyDate: null,
     studyMinutesToday: 0,
-    questionsAnswered: 0,
-    correctAnswers: 0,
+    questionsAnsweredToday: 0,    // 今日の問題数
+    correctAnswersToday: 0,       // 今日の正解数
+    questionsAnswered: 0,         // 累計問題数
+    correctAnswers: 0,            // 累計正解数
+    todayIncorrectProblems: [],   // 今日間違えた問題
     weeklyData: [],
     badges: [],
     parentEmail: localStorage.getItem('parentEmail') || ''
@@ -33,12 +36,13 @@ function updateUI() {
     document.getElementById('totalPoints').textContent = userData.totalPoints;
     document.getElementById('completedMinutes').textContent = userData.studyMinutesToday;
     
-    const accuracy = userData.questionsAnswered > 0 
-        ? Math.round((userData.correctAnswers / userData.questionsAnswered) * 100) 
+    // 今日の正答率を表示
+    const todayAccuracy = userData.questionsAnsweredToday > 0 
+        ? Math.round((userData.correctAnswersToday / userData.questionsAnsweredToday) * 100) 
         : 0;
-    document.getElementById('accuracyRate').textContent = accuracy;
+    document.getElementById('accuracyRate').textContent = todayAccuracy;
     
-    const progressPercentage = Math.min((userData.studyMinutesToday / 60) * 100, 100);
+    const progressPercentage = Math.min((userData.studyMinutesToday / 30) * 100, 100);
     document.getElementById('dailyProgress').style.width = progressPercentage + '%';
 }
 
@@ -87,6 +91,12 @@ function startKanjiPractice() {
     document.getElementById('kanjiScreen').classList.add('active');
     currentKanjiIndex = 0;
     kanjiScore = 0;
+    consecutiveCorrect = 0; // 連続正解をリセット
+    
+    // 学習開始の応援演出
+    if (typeof showStartMotivation === 'function') {
+        showStartMotivation();
+    }
     
     // 今回のセッション用に10問をランダム選択（重複なし）
     currentKanjiSession = [];
@@ -107,7 +117,9 @@ function startKanjiPractice() {
         id: kanjiQuestions[index]?.id || '未定義'
     })));
     
-    showKanjiQuestion();
+    setTimeout(() => {
+        showKanjiQuestion();
+    }, 1000); // 応援演出の後に問題表示
 }
 
 // 漢字問題表示（セッション問題から順次出題）
@@ -173,33 +185,92 @@ function checkKanjiAnswer(selected, correctIndex = null) {
     
     // correctIndexが渡された場合はそれを使用、なければ元の問題の正解を使用
     const correctAnswer = correctIndex !== null ? correctIndex : originalQuestion.correct;
+    const isCorrect = selected === correctAnswer;
     
-    if (selected === correctAnswer) {
+    if (isCorrect) {
         buttons[selected].classList.add('correct');
         kanjiScore += 10;
         userData.correctAnswers++;
+        userData.correctAnswersToday++;
         userData.totalPoints += 10;
+        
+        // 正解表示
+        showAnswerFeedback(true, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
+        
+        // ゲーミフィケーションイベント発火
+        if (typeof fireAnswerEvent === 'function') {
+            fireAnswerEvent(true, originalQuestion);
+        }
         
         setTimeout(() => {
             currentKanjiIndex++;
             userData.questionsAnswered++;
+            userData.questionsAnsweredToday++;
+            
+            // 学習記録をメールシステムに送信
+            if (typeof recordAnswer === 'function') {
+                recordAnswer('kanji', true, originalQuestion);
+            }
+            
+            // 30分完了チェック
+            if (userData.studyMinutesToday >= 30 || userData.questionsAnsweredToday >= 12) {
+                setTimeout(() => {
+                    showThirtyMinuteComplete();
+                }, 500);
+            }
+            
             saveUserData();
             showKanjiQuestion();
-        }, 1000);
+        }, 2000);
     } else {
         buttons[selected].classList.add('incorrect');
         buttons[correctAnswer].classList.add('correct');
         userData.questionsAnswered++;
+        userData.questionsAnsweredToday++;
+        
+        // 間違えた問題を今日のリストに追加
+        const incorrectProblem = {
+            id: originalQuestion.id,
+            question: originalQuestion.question,
+            correctAnswer: originalQuestion.options[correctAnswer],
+            studentAnswer: originalQuestion.options[selected],
+            explanation: originalQuestion.explanation,
+            grade: getKanjiGrade(originalQuestion.question),
+            timestamp: new Date().toLocaleTimeString('ja-JP')
+        };
+        userData.todayIncorrectProblems.push(incorrectProblem);
+        
+        // 不正解表示
+        showAnswerFeedback(false, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
+        
+        // ゲーミフィケーションイベント発火
+        if (typeof fireAnswerEvent === 'function') {
+            fireAnswerEvent(false, originalQuestion);
+        }
         
         setTimeout(() => {
             currentKanjiIndex++;
+            
+            // 間違えた問題をメールシステムに記録
+            if (typeof recordAnswer === 'function') {
+                recordAnswer('kanji', false, {
+                    ...originalQuestion,
+                    studentAnswer: originalQuestion.options[selected]
+                });
+            }
+            
             saveUserData();
             showKanjiQuestion();
-        }, 2000);
+        }, 3000);
     }
     
     document.getElementById('kanjiScore').textContent = kanjiScore;
     updateUI();
+    
+    // 60分達成チェック
+    if (typeof checkDailyGoal === 'function') {
+        checkDailyGoal();
+    }
 }
 
 // デバッグ関数
@@ -590,8 +661,10 @@ function updateDateDisplay() {
         
         userData.lastStudyDate = todayStr;
         userData.studyMinutesToday = 0;
-        userData.questionsAnswered = 0;
-        userData.correctAnswers = 0;
+        // 今日の学習データをリセット
+        userData.questionsAnsweredToday = 0;
+        userData.correctAnswersToday = 0;
+        userData.todayIncorrectProblems = [];
         saveUserData();
     }
     
@@ -629,6 +702,18 @@ window.addEventListener('DOMContentLoaded', () => {
     if (typeof applyRandomization === 'function') {
         applyRandomization();
         console.log('✅ 正解位置ランダム化完了');
+    }
+    
+    // 今日の学習メニューを表示
+    if (typeof showTodayMenu === 'function') {
+        showTodayMenu();
+        console.log('📅 今日の学習メニュー表示完了');
+    }
+    
+    // EmailJS初期化
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init('user_education_app'); // EmailJSユーザーID
+        console.log('📧 EmailJS初期化完了');
     }
     
     // 1分ごとに学習時間を更新
