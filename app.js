@@ -5,8 +5,11 @@ let userData = {
     streakDays: 0,
     lastStudyDate: null,
     studyMinutesToday: 0,
-    questionsAnswered: 0,
-    correctAnswers: 0,
+    questionsAnsweredToday: 0,    // 今日の問題数
+    correctAnswersToday: 0,       // 今日の正解数
+    questionsAnswered: 0,         // 累計問題数
+    correctAnswers: 0,            // 累計正解数
+    todayIncorrectProblems: [],   // 今日間違えた問題
     weeklyData: [],
     badges: [],
     parentEmail: localStorage.getItem('parentEmail') || ''
@@ -33,10 +36,11 @@ function updateUI() {
     document.getElementById('totalPoints').textContent = userData.totalPoints;
     document.getElementById('completedMinutes').textContent = userData.studyMinutesToday;
     
-    const accuracy = userData.questionsAnswered > 0 
-        ? Math.round((userData.correctAnswers / userData.questionsAnswered) * 100) 
+    // 今日の正答率を表示
+    const todayAccuracy = userData.questionsAnsweredToday > 0 
+        ? Math.round((userData.correctAnswersToday / userData.questionsAnsweredToday) * 100) 
         : 0;
-    document.getElementById('accuracyRate').textContent = accuracy;
+    document.getElementById('accuracyRate').textContent = todayAccuracy;
     
     const progressPercentage = Math.min((userData.studyMinutesToday / 30) * 100, 100);
     document.getElementById('dailyProgress').style.width = progressPercentage + '%';
@@ -179,11 +183,16 @@ function checkKanjiAnswer(selected, correctIndex = null) {
         buttons[selected].classList.add('correct');
         kanjiScore += 10;
         userData.correctAnswers++;
+        userData.correctAnswersToday++;
         userData.totalPoints += 10;
+        
+        // 正解表示
+        showAnswerFeedback(true, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
         
         setTimeout(() => {
             currentKanjiIndex++;
             userData.questionsAnswered++;
+            userData.questionsAnsweredToday++;
             
             // 学習記録をメールシステムに送信
             if (typeof recordAnswer === 'function') {
@@ -192,11 +201,27 @@ function checkKanjiAnswer(selected, correctIndex = null) {
             
             saveUserData();
             showKanjiQuestion();
-        }, 1000);
+        }, 2000);
     } else {
         buttons[selected].classList.add('incorrect');
         buttons[correctAnswer].classList.add('correct');
         userData.questionsAnswered++;
+        userData.questionsAnsweredToday++;
+        
+        // 間違えた問題を今日のリストに追加
+        const incorrectProblem = {
+            id: originalQuestion.id,
+            question: originalQuestion.question,
+            correctAnswer: originalQuestion.options[correctAnswer],
+            studentAnswer: originalQuestion.options[selected],
+            explanation: originalQuestion.explanation,
+            grade: getKanjiGrade(originalQuestion.question),
+            timestamp: new Date().toLocaleTimeString('ja-JP')
+        };
+        userData.todayIncorrectProblems.push(incorrectProblem);
+        
+        // 不正解表示
+        showAnswerFeedback(false, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
         
         setTimeout(() => {
             currentKanjiIndex++;
@@ -211,7 +236,7 @@ function checkKanjiAnswer(selected, correctIndex = null) {
             
             saveUserData();
             showKanjiQuestion();
-        }, 2000);
+        }, 3000);
     }
     
     document.getElementById('kanjiScore').textContent = kanjiScore;
@@ -611,8 +636,10 @@ function updateDateDisplay() {
         
         userData.lastStudyDate = todayStr;
         userData.studyMinutesToday = 0;
-        userData.questionsAnswered = 0;
-        userData.correctAnswers = 0;
+        // 今日の学習データをリセット
+        userData.questionsAnsweredToday = 0;
+        userData.correctAnswersToday = 0;
+        userData.todayIncorrectProblems = [];
         saveUserData();
     }
     

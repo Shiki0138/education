@@ -894,6 +894,221 @@ body {
     margin-top: 5px;
 }
 
+/* 復習画面のスタイル */
+.review-content {
+    padding: 20px 0;
+}
+
+.no-incorrect-card {
+    text-align: center;
+    padding: 40px 20px;
+    background: #d4edda;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.no-incorrect-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.review-summary-card {
+    background: #fff3cd;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #ffc107;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.analysis-item {
+    text-align: center;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+}
+
+.analysis-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.analysis-value {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #856404;
+}
+
+.quick-advice {
+    margin-top: 15px;
+    padding: 10px;
+    background: #ffeaa7;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #856404;
+}
+
+.incorrect-item {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #dc3545;
+}
+
+.incorrect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.incorrect-number {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.incorrect-time {
+    font-size: 12px;
+    color: #666;
+}
+
+.incorrect-grade {
+    font-size: 12px;
+    background: #667eea;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.incorrect-question {
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.incorrect-answers {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.student-answer, .correct-answer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.answer-label {
+    font-size: 14px;
+    color: #666;
+    min-width: 100px;
+}
+
+.answer-value {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.answer-value.correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.answer-value.incorrect {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.incorrect-explanation {
+    font-size: 14px;
+    color: #666;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.incorrect-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.retry-single-btn, .remove-btn {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-single-btn {
+    background: #ffc107;
+    color: #856404;
+}
+
+.retry-single-btn:hover {
+    background: #ffb300;
+}
+
+.remove-btn {
+    background: #28a745;
+    color: white;
+}
+
+.remove-btn:hover {
+    background: #218838;
+}
+
+.review-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.retry-btn, .clear-btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn {
+    background: linear-gradient(135deg, #ffc107, #ff8c00);
+    color: white;
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
 /* レスポンシブ対応の強化 */
 @media (max-width: 600px) {
     .personal-stats {
@@ -911,6 +1126,18 @@ body {
     
     .voice-controls {
         flex-wrap: wrap;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .incorrect-actions {
+        flex-direction: column;
+    }
+    
+    .review-actions {
+        flex-direction: column;
     }
 }
 

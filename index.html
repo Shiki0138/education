@@ -79,9 +79,9 @@
                     <span>📊</span>
                     <span>進捗</span>
                 </button>
-                <button class="nav-btn" onclick="startWritingPractice()">
-                    <span>✍️</span>
-                    <span>記述</span>
+                <button class="nav-btn" onclick="showIncorrectReview()">
+                    <span>🔄</span>
+                    <span>復習</span>
                 </button>
                 <button class="nav-btn" onclick="showParentReport()">
                     <span>📧</span>
@@ -331,6 +331,36 @@
             </div>
         </div>
 
+        <!-- 間違い問題復習画面 -->
+        <div id="incorrectReviewScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>🔄 今日の間違い復習</h2>
+                <div class="review-count">
+                    <span id="incorrectCount">0</span>問
+                </div>
+            </div>
+
+            <div class="review-content">
+                <div class="review-summary" id="reviewSummary">
+                    <!-- 間違い問題サマリーがここに表示される -->
+                </div>
+                
+                <div class="incorrect-list" id="incorrectList">
+                    <!-- 間違い問題一覧がここに表示される -->
+                </div>
+
+                <div class="review-actions">
+                    <button class="retry-btn" onclick="retryIncorrectProblems()">
+                        🔄 間違い問題を再挑戦
+                    </button>
+                    <button class="clear-btn" onclick="clearIncorrectProblems()">
+                        ✅ 復習完了（リストクリア）
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -343,6 +373,9 @@
     <script src="mega-kanji-database-5.js"></script>
     <script src="mega-database-final.js"></script>
     <script src="option-randomizer.js"></script>
+    <script src="kanji-grade-data.js"></script>
+    <script src="answer-feedback.js"></script>
+    <script src="incorrect-review.js"></script>
     <script src="daily-schedule.js"></script>
     <script src="email-system.js"></script>
     <script src="generated-reading-problems.js"></script>
