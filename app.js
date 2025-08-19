@@ -173,8 +173,9 @@ function checkKanjiAnswer(selected, correctIndex = null) {
     
     // correctIndexが渡された場合はそれを使用、なければ元の問題の正解を使用
     const correctAnswer = correctIndex !== null ? correctIndex : originalQuestion.correct;
+    const isCorrect = selected === correctAnswer;
     
-    if (selected === correctAnswer) {
+    if (isCorrect) {
         buttons[selected].classList.add('correct');
         kanjiScore += 10;
         userData.correctAnswers++;
@@ -183,6 +184,12 @@ function checkKanjiAnswer(selected, correctIndex = null) {
         setTimeout(() => {
             currentKanjiIndex++;
             userData.questionsAnswered++;
+            
+            // 学習記録をメールシステムに送信
+            if (typeof recordAnswer === 'function') {
+                recordAnswer('kanji', true, originalQuestion);
+            }
+            
             saveUserData();
             showKanjiQuestion();
         }, 1000);
@@ -193,6 +200,15 @@ function checkKanjiAnswer(selected, correctIndex = null) {
         
         setTimeout(() => {
             currentKanjiIndex++;
+            
+            // 間違えた問題をメールシステムに記録
+            if (typeof recordAnswer === 'function') {
+                recordAnswer('kanji', false, {
+                    ...originalQuestion,
+                    studentAnswer: originalQuestion.options[selected]
+                });
+            }
+            
             saveUserData();
             showKanjiQuestion();
         }, 2000);
@@ -200,6 +216,11 @@ function checkKanjiAnswer(selected, correctIndex = null) {
     
     document.getElementById('kanjiScore').textContent = kanjiScore;
     updateUI();
+    
+    // 60分達成チェック
+    if (typeof checkDailyGoal === 'function') {
+        checkDailyGoal();
+    }
 }
 
 // デバッグ関数
@@ -629,6 +650,18 @@ window.addEventListener('DOMContentLoaded', () => {
     if (typeof applyRandomization === 'function') {
         applyRandomization();
         console.log('✅ 正解位置ランダム化完了');
+    }
+    
+    // 今日の学習メニューを表示
+    if (typeof showTodayMenu === 'function') {
+        showTodayMenu();
+        console.log('📅 今日の学習メニュー表示完了');
+    }
+    
+    // EmailJS初期化
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init('user_education_app'); // EmailJSユーザーID
+        console.log('📧 EmailJS初期化完了');
     }
     
     // 1分ごとに学習時間を更新
