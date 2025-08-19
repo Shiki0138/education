@@ -1,22 +1,35 @@
 // 500問漢字データベース統合版
 
-// 全データベースを統合
-const all500KanjiProblems = [
-    // Part 1: 基礎～中級 (1-100問)
-    ...megaKanjiDatabase1,
-    
-    // Part 2: 四字熟語・部首・画数 (101-200問)  
-    ...megaKanjiDatabase2,
-    
-    // Part 3: 地名・特殊読み (201-300問)
-    ...megaKanjiDatabase3,
-    
-    // Part 4: 科学・自然 (301-400問)
-    ...megaKanjiDatabase4,
-    
-    // Part 5: 社会・感情・最難関 (401-500問)
-    ...megaKanjiDatabase5
-];
+// 全データベースを統合（安全な統合）
+let all500KanjiProblems = [];
+
+// 各データベースが読み込まれているかチェックして統合
+if (typeof megaKanjiDatabase1 !== 'undefined') {
+    all500KanjiProblems = all500KanjiProblems.concat(megaKanjiDatabase1);
+    console.log('Part 1 loaded:', megaKanjiDatabase1.length, '問');
+}
+
+if (typeof megaKanjiDatabase2 !== 'undefined') {
+    all500KanjiProblems = all500KanjiProblems.concat(megaKanjiDatabase2);
+    console.log('Part 2 loaded:', megaKanjiDatabase2.length, '問');
+}
+
+if (typeof megaKanjiDatabase3 !== 'undefined') {
+    all500KanjiProblems = all500KanjiProblems.concat(megaKanjiDatabase3);
+    console.log('Part 3 loaded:', megaKanjiDatabase3.length, '問');
+}
+
+if (typeof megaKanjiDatabase4 !== 'undefined') {
+    all500KanjiProblems = all500KanjiProblems.concat(megaKanjiDatabase4);
+    console.log('Part 4 loaded:', megaKanjiDatabase4.length, '問');
+}
+
+if (typeof megaKanjiDatabase5 !== 'undefined') {
+    all500KanjiProblems = all500KanjiProblems.concat(megaKanjiDatabase5);
+    console.log('Part 5 loaded:', megaKanjiDatabase5.length, '問');
+}
+
+console.log('🎯 統合後の漢字問題総数:', all500KanjiProblems.length);
 
 // 正解分布チェック（500問全体）
 function analyzeCorrectDistribution() {

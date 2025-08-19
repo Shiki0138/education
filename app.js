@@ -79,6 +79,7 @@ const kanjiQuestions = typeof all500KanjiProblems !== 'undefined'
 
 let currentKanjiIndex = 0;
 let kanjiScore = 0;
+let currentKanjiSession = []; // 今回のセッションで出題する問題のインデックス
 
 // 漢字練習開始
 function startKanjiPractice() {
@@ -86,12 +87,32 @@ function startKanjiPractice() {
     document.getElementById('kanjiScreen').classList.add('active');
     currentKanjiIndex = 0;
     kanjiScore = 0;
+    
+    // 今回のセッション用に10問をランダム選択（重複なし）
+    currentKanjiSession = [];
+    const availableIndices = Array.from({length: kanjiQuestions.length}, (_, i) => i);
+    
+    // Fisher-Yatesシャッフルで10問を選択
+    for (let i = 0; i < Math.min(10, kanjiQuestions.length); i++) {
+        const randomIndex = Math.floor(Math.random() * availableIndices.length);
+        currentKanjiSession.push(availableIndices[randomIndex]);
+        availableIndices.splice(randomIndex, 1);
+    }
+    
+    // デバッグ用：セッション問題のログ
+    console.log('今回の漢字セッション問題:', currentKanjiSession);
+    console.log('問題詳細:', currentKanjiSession.map(index => ({
+        index: index,
+        question: kanjiQuestions[index]?.question || '未定義',
+        id: kanjiQuestions[index]?.id || '未定義'
+    })));
+    
     showKanjiQuestion();
 }
 
-// 漢字問題表示（ランダム出題）
+// 漢字問題表示（セッション問題から順次出題）
 function showKanjiQuestion() {
-    if (currentKanjiIndex >= 10) {
+    if (currentKanjiIndex >= currentKanjiSession.length) {
         finishKanjiPractice();
         return;
     }
@@ -99,28 +120,20 @@ function showKanjiQuestion() {
     const questionNum = currentKanjiIndex + 1;
     document.getElementById('kanjiQuestionNum').textContent = questionNum;
     
-    // ランダムに問題を選択（重複回避）
-    const availableQuestions = kanjiQuestions.filter((_, index) => 
-        !userData.usedKanjiQuestions || !userData.usedKanjiQuestions.includes(index)
-    );
+    // 事前に選択された問題を順次出題
+    const questionIndex = currentKanjiSession[currentKanjiIndex];
+    const question = kanjiQuestions[questionIndex];
     
-    if (availableQuestions.length === 0) {
-        // 全問題を使い切った場合はリセット
-        userData.usedKanjiQuestions = [];
+    if (!question) {
+        console.error('問題が見つかりません:', questionIndex);
+        finishKanjiPractice();
+        return;
     }
-    
-    const randomIndex = Math.floor(Math.random() * (availableQuestions.length || kanjiQuestions.length));
-    const question = availableQuestions[randomIndex] || kanjiQuestions[randomIndex];
-    
-    // 使用済み問題として記録
-    const originalIndex = kanjiQuestions.findIndex(q => q.id === question.id);
-    if (!userData.usedKanjiQuestions) userData.usedKanjiQuestions = [];
-    userData.usedKanjiQuestions.push(originalIndex);
     
     document.getElementById('kanjiQuestion').textContent = question.question;
     
     const optionsHTML = question.options.map((option, index) => 
-        `<button onclick="checkKanjiAnswer(${index}, ${originalIndex})">${index + 1}. ${option}</button>`
+        `<button onclick="checkKanjiAnswer(${index})">${index + 1}. ${option}</button>`
     ).join('');
     
     document.getElementById('kanjiOptions').innerHTML = optionsHTML;
@@ -129,8 +142,9 @@ function showKanjiQuestion() {
 }
 
 // 漢字の答え合わせ
-function checkKanjiAnswer(selected, questionIndex = null) {
-    const question = questionIndex !== null ? kanjiQuestions[questionIndex] : kanjiQuestions[currentKanjiIndex % kanjiQuestions.length];
+function checkKanjiAnswer(selected) {
+    const questionIndex = currentKanjiSession[currentKanjiIndex];
+    const question = kanjiQuestions[questionIndex];
     const buttons = document.querySelectorAll('#kanjiOptions button');
     
     if (selected === question.correct) {
@@ -163,8 +177,9 @@ function checkKanjiAnswer(selected, questionIndex = null) {
 
 // ヒント表示
 function showKanjiHint() {
-    const question = kanjiQuestions[currentKanjiIndex % kanjiQuestions.length];
-    document.getElementById('kanjiHint').textContent = question.hint;
+    const questionIndex = currentKanjiSession[currentKanjiIndex];
+    const question = kanjiQuestions[questionIndex];
+    document.getElementById('kanjiHint').textContent = question.hint || "この問題について考えてみましょう。";
     document.getElementById('kanjiHint').classList.add('show');
 }
 
@@ -526,6 +541,18 @@ function updateDateDisplay() {
 window.addEventListener('DOMContentLoaded', () => {
     loadUserData();
     updateDateDisplay();
+    
+    // 漢字問題データベースの確認
+    console.log('漢字問題データベース読み込み状況:');
+    console.log('- 問題総数:', kanjiQuestions.length);
+    console.log('- 最初の3問:', kanjiQuestions.slice(0, 3).map(q => ({
+        id: q.id,
+        question: q.question
+    })));
+    
+    if (kanjiQuestions.length < 10) {
+        console.warn('⚠️ 漢字問題が10問未満です。データベースの読み込みを確認してください。');
+    }
     
     // 1分ごとに学習時間を更新
     setInterval(() => {
