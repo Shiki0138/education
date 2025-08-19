@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合格への道 - 国語学習アプリ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ヘッダー -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">合格への道 📚</h1>
+                <div class="user-info">
+                    <span class="level-badge">Lv.<span id="userLevel">1</span></span>
+                    <span class="streak">🔥 <span id="streakDays">0</span>日連続</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- メイン画面 -->
+        <div id="mainScreen" class="screen active">
+            <div class="welcome-message">
+                <h2 id="welcomeText">今日も頑張ろう！</h2>
+                <p class="date-display" id="dateDisplay"></p>
+            </div>
+
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <h3>今日の進捗</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="dailyProgress"></div>
+                    </div>
+                    <p class="progress-text"><span id="completedMinutes">0</span> / 60分</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">総ポイント</span>
+                        <span class="stat-value" id="totalPoints">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">正答率</span>
+                        <span class="stat-value"><span id="accuracyRate">0</span>%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="startKanjiPractice()">
+                    <span class="menu-icon">📝</span>
+                    <span class="menu-title">漢字練習</span>
+                    <span class="menu-desc">基本漢字をマスター</span>
+                </button>
+                <button class="menu-btn" onclick="startReading()">
+                    <span class="menu-icon">📖</span>
+                    <span class="menu-title">読解問題</span>
+                    <span class="menu-desc">文章理解力を鍛える</span>
+                </button>
+                <button class="menu-btn" onclick="startVocabulary()">
+                    <span class="menu-icon">💬</span>
+                    <span class="menu-title">語彙力強化</span>
+                    <span class="menu-desc">ことわざ・慣用句</span>
+                </button>
+                <button class="menu-btn" onclick="startAIPractice()">
+                    <span class="menu-icon">🤖</span>
+                    <span class="menu-title">AI問題生成</span>
+                    <span class="menu-desc">個人最適化問題</span>
+                </button>
+            </div>
+
+            <div class="bottom-nav">
+                <button class="nav-btn" onclick="showProgress()">
+                    <span>📊</span>
+                    <span>進捗</span>
+                </button>
+                <button class="nav-btn" onclick="startWritingPractice()">
+                    <span>✍️</span>
+                    <span>記述</span>
+                </button>
+                <button class="nav-btn" onclick="showParentReport()">
+                    <span>📧</span>
+                    <span>レポート</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 漢字練習画面 -->
+        <div id="kanjiScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>漢字練習</h2>
+                <div class="score-display">
+                    <span id="kanjiScore">0</span>点
+                </div>
+            </div>
+
+            <div class="practice-content">
+                <div class="question-card">
+                    <div class="question-number">問題 <span id="kanjiQuestionNum">1</span> / 10</div>
+                    <div class="kanji-question" id="kanjiQuestion">
+                        <!-- 問題がここに表示される -->
+                    </div>
+                    <div class="answer-options" id="kanjiOptions">
+                        <!-- 選択肢がここに表示される -->
+                    </div>
+                </div>
+                <div class="hint-section">
+                    <button class="hint-btn" onclick="showKanjiHint()">💡 ヒント</button>
+                    <div class="hint-content" id="kanjiHint"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 読解問題画面 -->
+        <div id="readingScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>読解問題</h2>
+                <div class="timer-display">
+                    <span id="readingTimer">00:00</span>
+                </div>
+            </div>
+
+            <div class="reading-content">
+                <div class="passage-container">
+                    <h3>次の文章を読んで、問題に答えなさい。</h3>
+                    <div class="passage-text" id="passageText">
+                        <!-- 文章がここに表示される -->
+                    </div>
+                </div>
+                <div class="questions-container">
+                    <div class="reading-question" id="readingQuestion">
+                        <!-- 問題がここに表示される -->
+                    </div>
+                    <div class="reading-options" id="readingOptions">
+                        <!-- 選択肢がここに表示される -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 進捗画面 -->
+        <div id="progressScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>学習進捗</h2>
+            </div>
+
+            <div class="progress-content">
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <div class="progress-details">
+                    <h3>今週の学習記録</h3>
+                    <div class="weekly-stats" id="weeklyStats">
+                        <!-- 週間統計がここに表示される -->
+                    </div>
+                </div>
+                <div class="weakness-analysis">
+                    <h3>弱点分析</h3>
+                    <div class="weakness-list" id="weaknessList">
+                        <!-- 弱点リストがここに表示される -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 保護者レポート画面 -->
+        <div id="reportScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>保護者レポート</h2>
+            </div>
+
+            <div class="report-content">
+                <div class="report-summary">
+                    <h3>本日の学習レポート</h3>
+                    <div class="report-card">
+                        <div class="report-item">
+                            <span class="report-label">学習時間</span>
+                            <span class="report-value" id="reportTime">0分</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-label">解いた問題数</span>
+                            <span class="report-value" id="reportQuestions">0問</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-label">正答率</span>
+                            <span class="report-value" id="reportAccuracy">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-actions">
+                    <button class="send-report-btn" onclick="sendReport()">
+                        📧 レポートを送信
+                    </button>
+                    <div class="email-input-container">
+                        <input type="email" id="parentEmail" placeholder="保護者のメールアドレス" />
+                        <button onclick="saveEmail()">保存</button>
+                    </div>
+                </div>
+
+                <div class="detailed-report" id="detailedReport">
+                    <!-- 詳細レポートがここに表示される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果表示モーダル -->
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <h2 id="resultTitle">素晴らしい！</h2>
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <p id="resultMessage"></p>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span>獲得ポイント</span>
+                        <span id="earnedPoints">+0</span>
+                    </div>
+                    <div class="result-stat">
+                        <span>正答率</span>
+                        <span id="resultAccuracy">0%</span>
+                    </div>
+                </div>
+                <button class="modal-btn" onclick="closeResult()">次へ進む</button>
+            </div>
+        </div>
+
+        <!-- 語彙力強化画面 -->
+        <div id="vocabularyScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>語彙力強化</h2>
+                <div class="score-display">
+                    <span id="vocabularyScore">0</span>点
+                </div>
+            </div>
+
+            <div class="practice-content">
+                <div class="question-card">
+                    <div class="question-number">問題 <span id="vocabularyQuestionNum">1</span> / 10</div>
+                    <div class="vocabulary-question" id="vocabularyQuestion">
+                        <!-- 問題がここに表示される -->
+                    </div>
+                    <div class="answer-options" id="vocabularyOptions">
+                        <!-- 選択肢がここに表示される -->
+                    </div>
+                </div>
+                <div class="hint-section">
+                    <button class="hint-btn" onclick="showVocabularyHint()">💡 ヒント</button>
+                    <div class="hint-content" id="vocabularyHint"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI問題生成画面 -->
+        <div id="aiPracticeScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>AI個人最適化問題</h2>
+                <div class="ai-status">
+                    <span id="aiStatus">準備完了</span>
+                </div>
+            </div>
+
+            <div class="ai-content">
+                <div class="personalization-panel">
+                    <h3>あなたの学習データ</h3>
+                    <div class="personal-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">弱点分野</span>
+                            <span class="stat-value" id="weaknessAreas">分析中...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">推奨レベル</span>
+                            <span class="stat-value" id="recommendedLevel">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-generation">
+                    <button class="generate-btn" onclick="generatePersonalizedProblem()">
+                        🤖 あなた専用問題を生成
+                    </button>
+                    <div class="generated-problem" id="generatedProblem">
+                        <!-- AI生成問題がここに表示される -->
+                    </div>
+                </div>
+
+                <div class="ai-explanation" id="aiExplanation">
+                    <!-- AI解説がここに表示される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 記述問題画面 -->
+        <div id="writingScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+                <h2>記述問題</h2>
+                <div class="timer-display">
+                    <span id="writingTimer">00:00</span>
+                </div>
+            </div>
+
+            <div class="writing-content">
+                <div class="writing-question" id="writingQuestion">
+                    <!-- 記述問題がここに表示される -->
+                </div>
+                <div class="writing-area">
+                    <textarea id="writingAnswer" placeholder="ここに答えを書いてください（制限字数以内）"></textarea>
+                    <div class="character-count">
+                        <span id="currentChars">0</span> / <span id="maxChars">50</span>字
+                    </div>
+                </div>
+                <div class="writing-actions">
+                    <button class="submit-btn" onclick="submitWritingAnswer()">解答提出</button>
+                    <button class="hint-btn" onclick="showWritingHint()">💡 ヒント</button>
+                </div>
+                <div class="ai-feedback" id="aiFeedback">
+                    <!-- AI採点結果がここに表示される -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="exam-data.js"></script>
+    <script src="balanced-kanji-problems.js"></script>
+    <script src="generated-reading-problems.js"></script>
+    <script src="generated-grammar-problems.js"></script>
+    <script src="generated-writing-problems.js"></script>
+    <script src="master-database.js"></script>
+    <script src="problem-generator.js"></script>
+    <script src="app.js"></script>
+    <script src="enhanced-app.js"></script>
+</body>
+</html>
