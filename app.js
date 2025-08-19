@@ -189,6 +189,11 @@ function checkKanjiAnswer(selected, correctIndex = null) {
         // 正解表示
         showAnswerFeedback(true, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
         
+        // ゲーミフィケーションイベント発火
+        if (typeof fireAnswerEvent === 'function') {
+            fireAnswerEvent(true, originalQuestion);
+        }
+        
         setTimeout(() => {
             currentKanjiIndex++;
             userData.questionsAnswered++;
@@ -197,6 +202,11 @@ function checkKanjiAnswer(selected, correctIndex = null) {
             // 学習記録をメールシステムに送信
             if (typeof recordAnswer === 'function') {
                 recordAnswer('kanji', true, originalQuestion);
+            }
+            
+            // 30分完了チェック
+            if (typeof checkThirtyMinuteCompletion === 'function') {
+                checkThirtyMinuteCompletion();
             }
             
             saveUserData();
@@ -222,6 +232,11 @@ function checkKanjiAnswer(selected, correctIndex = null) {
         
         // 不正解表示
         showAnswerFeedback(false, originalQuestion.options[correctAnswer], originalQuestion.explanation, originalQuestion.question);
+        
+        // ゲーミフィケーションイベント発火
+        if (typeof fireAnswerEvent === 'function') {
+            fireAnswerEvent(false, originalQuestion);
+        }
         
         setTimeout(() => {
             currentKanjiIndex++;
