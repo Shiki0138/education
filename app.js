@@ -64,11 +64,11 @@ function showParentReport() {
     updateReportData();
 }
 
-// バランス調整済み漢字問題を使用（30問、正解分散）
-const kanjiQuestions = typeof balancedKanjiProblems !== 'undefined' 
-    ? balancedKanjiProblems 
-    : (typeof generatedKanjiProblems !== 'undefined' 
-        ? generatedKanjiProblems.slice(0, 30) 
+// 500問の大規模漢字データベースを使用
+const kanjiQuestions = typeof all500KanjiProblems !== 'undefined' 
+    ? all500KanjiProblems 
+    : (typeof balancedKanjiProblems !== 'undefined' 
+        ? balancedKanjiProblems 
         : examKanjiData.filter(q => q.type === "reading").map(q => ({
             question: q.question,
             options: q.options,
