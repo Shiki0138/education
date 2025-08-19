@@ -91,6 +91,12 @@ function startKanjiPractice() {
     document.getElementById('kanjiScreen').classList.add('active');
     currentKanjiIndex = 0;
     kanjiScore = 0;
+    consecutiveCorrect = 0; // 連続正解をリセット
+    
+    // 学習開始の応援演出
+    if (typeof showStartMotivation === 'function') {
+        showStartMotivation();
+    }
     
     // 今回のセッション用に10問をランダム選択（重複なし）
     currentKanjiSession = [];
@@ -111,7 +117,9 @@ function startKanjiPractice() {
         id: kanjiQuestions[index]?.id || '未定義'
     })));
     
-    showKanjiQuestion();
+    setTimeout(() => {
+        showKanjiQuestion();
+    }, 1000); // 応援演出の後に問題表示
 }
 
 // 漢字問題表示（セッション問題から順次出題）
@@ -205,8 +213,10 @@ function checkKanjiAnswer(selected, correctIndex = null) {
             }
             
             // 30分完了チェック
-            if (typeof checkThirtyMinuteCompletion === 'function') {
-                checkThirtyMinuteCompletion();
+            if (userData.studyMinutesToday >= 30 || userData.questionsAnsweredToday >= 12) {
+                setTimeout(() => {
+                    showThirtyMinuteComplete();
+                }, 500);
             }
             
             saveUserData();
