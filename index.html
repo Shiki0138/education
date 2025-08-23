@@ -731,11 +731,17 @@
                 buttons[selected].classList.add('correct');
                 score += 20;
                 userData.correctToday++;
+                userData.points += 10; // 読解問題は10ポイント
                 showResultPopup(true, problem.explanation);
+                console.log(`✅ 読解正解！ (+10pt)`);
+                
+                // 100ポイント達成チェック
+                checkHundredPointsAchievement();
             } else {
                 buttons[selected].classList.add('incorrect');
                 buttons[problem.correct].classList.add('correct');
                 showResultPopup(false, problem.explanation);
+                console.log(`❌ 読解不正解`);
             }
             
             userData.questionsToday++;
@@ -941,11 +947,17 @@
                 buttons[selected].classList.add('correct');
                 score += 15;
                 userData.correctToday++;
+                userData.points += 7; // 語彙問題は7ポイント
                 showResultPopup(true, problem.explanation);
+                console.log(`✅ 語彙正解！ (+7pt)`);
+                
+                // 100ポイント達成チェック
+                checkHundredPointsAchievement();
             } else {
                 buttons[selected].classList.add('incorrect');
                 buttons[problem.correct].classList.add('correct');
                 showResultPopup(false, problem.explanation);
+                console.log(`❌ 語彙不正解`);
             }
             
             userData.questionsToday++;
@@ -1140,8 +1152,12 @@ ${problem.modelAnswer}`);
                 buttons[selected].classList.add('correct');
                 score += 10;
                 userData.correctToday++;
+                userData.points += 5; // 漢字問題は5ポイント
                 showResultPopup(true, problem.explanation);
-                console.log(`✅ 正解！問題${questionBeforeAnswer + 1}完了`);
+                console.log(`✅ 正解！問題${questionBeforeAnswer + 1}完了 (+5pt)`);
+                
+                // 100ポイント達成チェック
+                checkHundredPointsAchievement();
             } else {
                 buttons[selected].classList.add('incorrect');
                 buttons[problem.correct].classList.add('correct');
@@ -1196,6 +1212,184 @@ ${problem.modelAnswer}`);
             const hintEl = document.getElementById('hintText');
             hintEl.textContent = problem.hint;
             hintEl.style.display = 'block';
+        }
+
+        // 100ポイント達成チェック
+        function checkHundredPointsAchievement() {
+            if (userData.points >= 100 && !userData.hundredPointsAchieved) {
+                userData.hundredPointsAchieved = true;
+                
+                // 豪華な達成ポップアップ
+                setTimeout(() => {
+                    showHundredPointsModal();
+                }, 1000);
+                
+                console.log('🏆 100ポイント達成！ご褒美表示');
+            }
+        }
+
+        // 100ポイント達成モーダル
+        function showHundredPointsModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 15000;
+                animation: modalFadeIn 0.5s ease-out;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: linear-gradient(135deg, #ffd700, #ffed4e); 
+                            color: #333; padding: 50px; border-radius: 25px; 
+                            text-align: center; max-width: 400px;
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                            animation: celebrationPop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                    <div style="font-size: 100px; margin-bottom: 20px;">🏆</div>
+                    <div style="font-size: 32px; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                        100ポイント達成！
+                    </div>
+                    <div style="font-size: 24px; margin-bottom: 20px; color: #e74c3c;">
+                        おめでとう！<br>ご褒美をあげます！
+                    </div>
+                    <div style="font-size: 18px; margin-bottom: 25px; opacity: 0.8;">
+                        🎁 特別ボーナス: +50ポイント！<br>
+                        🌟 新レベル解禁！<br>
+                        ⭐ 特別称号獲得！
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove(); giveReward();" 
+                            style="background: #e74c3c; color: white; border: none; 
+                                   border-radius: 15px; padding: 15px 30px; font-size: 18px; 
+                                   font-weight: bold; cursor: pointer; 
+                                   box-shadow: 0 5px 15px rgba(231,76,60,0.4);
+                                   transition: all 0.3s ease;">
+                        🎁 ご褒美を受け取る！
+                    </button>
+                </div>
+            `;
+
+            const styles = document.createElement('style');
+            styles.textContent = `
+                @keyframes modalFadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes celebrationPop {
+                    0% { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+                    50% { opacity: 1; transform: scale(1.1) rotate(5deg); }
+                    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+                }
+            `;
+            document.head.appendChild(styles);
+
+            document.body.appendChild(modal);
+
+            // 花火エフェクト
+            showCelebrationFireworks();
+
+            // 10秒後に自動で閉じる
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.remove();
+                }
+                styles.remove();
+            }, 10000);
+        }
+
+        // ご褒美授与
+        function giveReward() {
+            userData.points += 50; // ボーナスポイント
+            userData.level++; // レベルアップ
+            
+            // 特別称号
+            if (!userData.titles) userData.titles = [];
+            userData.titles.push('100ポイントマスター');
+            
+            updateUI();
+            
+            // 成功音とエフェクト
+            showRewardEffect();
+            
+            console.log('🎁 ご褒美授与完了: +50pt, レベルアップ, 称号獲得');
+        }
+
+        // 祝福花火
+        function showCelebrationFireworks() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.style.cssText = `
+                        position: fixed;
+                        top: ${Math.random() * 70 + 15}%;
+                        left: ${Math.random() * 80 + 10}%;
+                        font-size: 50px;
+                        z-index: 14999;
+                        pointer-events: none;
+                        animation: fireworkBoom 2.5s ease-out forwards;
+                    `;
+                    firework.textContent = ['🎆', '✨', '🌟', '💫', '🎇'][Math.floor(Math.random() * 5)];
+
+                    const fireworkStyle = document.createElement('style');
+                    fireworkStyle.textContent = `
+                        @keyframes fireworkBoom {
+                            0% { opacity: 0; transform: scale(0); }
+                            30% { opacity: 1; transform: scale(1.3); }
+                            100% { opacity: 0; transform: scale(0.7); }
+                        }
+                    `;
+                    document.head.appendChild(fireworkStyle);
+
+                    document.body.appendChild(firework);
+
+                    setTimeout(() => {
+                        firework.remove();
+                        fireworkStyle.remove();
+                    }, 2500);
+                }, i * 200);
+            }
+        }
+
+        // ご褒美エフェクト
+        function showRewardEffect() {
+            const effect = document.createElement('div');
+            effect.style.cssText = `
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 40px;
+                font-weight: bold;
+                color: #ffd700;
+                z-index: 14999;
+                pointer-events: none;
+                animation: rewardBounce 2s ease-out forwards;
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            `;
+            effect.textContent = '🎁 +50pt ボーナス！ 🎁';
+
+            const effectStyle = document.createElement('style');
+            effectStyle.textContent = `
+                @keyframes rewardBounce {
+                    0% { opacity: 0; transform: translateX(-50%) scale(0.5) translateY(50px); }
+                    30% { opacity: 1; transform: translateX(-50%) scale(1.2) translateY(-10px); }
+                    70% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+                    100% { opacity: 0; transform: translateX(-50%) scale(0.8) translateY(-30px); }
+                }
+            `;
+            document.head.appendChild(effectStyle);
+
+            document.body.appendChild(effect);
+
+            setTimeout(() => {
+                effect.remove();
+                effectStyle.remove();
+            }, 2000);
         }
 
         // UI更新
