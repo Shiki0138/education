@@ -228,7 +228,7 @@
             </div>
 
             <div class="question-card">
-                <div>問題 <span id="questionNum">1</span> / 5</div>
+                <div>問題 <span id="questionNum">1</span> / 10</div>
                 <div class="question-text" id="questionText">
                     読み込み中...
                 </div>
@@ -242,6 +242,76 @@
                     💡 ヒント
                 </button>
                 <div id="hintText" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 10px; display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 読解問題画面 -->
+        <div id="readingScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="goHome()">← 戻る</button>
+                <h2>📖 読解問題</h2>
+                <div>問題 <span id="readingNum">1</span> / 3</div>
+            </div>
+
+            <div class="question-card">
+                <div id="passageContainer" style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; line-height: 1.8; font-size: 14px;">
+                    <!-- 文章がここに表示される -->
+                </div>
+                <div class="question-text" id="readingQuestionText">
+                    読み込み中...
+                </div>
+                <div class="options" id="readingOptionsContainer">
+                    <!-- 選択肢がここに表示される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 語彙力強化画面 -->
+        <div id="vocabularyScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="goHome()">← 戻る</button>
+                <h2>💬 四字熟語・ことわざ</h2>
+                <div>問題 <span id="vocabNum">1</span> / 5</div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text" id="vocabQuestionText">
+                    読み込み中...
+                </div>
+                <div class="options" id="vocabOptionsContainer">
+                    <!-- 選択肢がここに表示される -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 記述問題画面 -->
+        <div id="writingScreen" class="screen">
+            <div class="practice-header">
+                <button class="back-btn" onclick="goHome()">← 戻る</button>
+                <h2>✍️ 記述問題</h2>
+                <div>問題 <span id="writingNum">1</span> / 2</div>
+            </div>
+
+            <div class="question-card">
+                <div id="writingPassage" style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; line-height: 1.6; font-size: 14px;">
+                    <!-- 文章がここに表示される -->
+                </div>
+                <div class="question-text" id="writingQuestionText">
+                    読み込み中...
+                </div>
+                <div style="margin: 15px 0;">
+                    <textarea id="writingAnswer" placeholder="ここに答えを書いてください" 
+                              style="width: 100%; height: 120px; padding: 10px; border: 2px solid #90caf9; 
+                                     border-radius: 10px; font-size: 16px; resize: vertical;"></textarea>
+                    <div style="text-align: right; margin-top: 5px; font-size: 14px; color: #666;">
+                        <span id="charCount">0</span> / <span id="maxChars">80</span> 字
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button onclick="submitWriting()" style="background: #1976d2; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                        解答提出
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -276,44 +346,171 @@
             correctToday: 0
         };
 
-        // 漢字問題データ（最小限）
+        // 中学受験レベル（偏差値50）漢字問題
         const kanjiProblems = [
             {
-                question: "次の漢字の読み方を選びなさい：【学校】",
-                options: ["がっこう", "がくこう", "がくしょう", "がっしょう"],
+                question: "傍線部の漢字の読み方を答えなさい：彼の【卓越】した技術に驚いた。",
+                options: ["たくえつ", "たくこし", "しょうえつ", "たくぜつ"],
                 correct: 0,
-                hint: "みんなが勉強する場所です",
-                explanation: "学校（がっこう）= 勉強する場所"
+                hint: "「卓」は「すぐれる」という意味です",
+                explanation: "卓越（たくえつ）= 他よりも特に優れていること"
             },
             {
-                question: "次の漢字の読み方を選びなさい：【友達】",
-                options: ["ゆうたつ", "ともだち", "ゆうだち", "ともたつ"],
+                question: "傍線部の漢字の読み方を答えなさい：【逸話】として語り継がれている。",
+                options: ["いつわ", "いちわ", "いつだん", "いちだん"],
+                correct: 0,
+                hint: "世間にあまり知られていない興味深い話です",
+                explanation: "逸話（いつわ）= 世間にあまり知られていない興味深い話"
+            },
+            {
+                question: "傍線部の漢字の読み方を答えなさい：【謙遜】して自分の実力を隠した。",
+                options: ["けんそん", "けんじょう", "きょうそん", "けんしょう"],
+                correct: 0,
+                hint: "「謙」は「へりくだる」という意味です",
+                explanation: "謙遜（けんそん）= 控えめな態度をとること"
+            },
+            {
+                question: "傍線部の漢字の読み方を答えなさい：【洞察】力を身につける。",
+                options: ["とうさつ", "どうかつ", "とうかつ", "どうさつ"],
+                correct: 3,
+                hint: "物事の本質を見抜くことです",
+                explanation: "洞察（どうさつ）= 物事の本質を見抜くこと"
+            },
+            {
+                question: "傍線部の漢字の読み方を答えなさい：心の【葛藤】に苦しんだ。",
+                options: ["かつとう", "かっとう", "くずとう", "かつどう"],
                 correct: 1,
-                hint: "親しい仲間のことです",
-                explanation: "友達（ともだち）= 親しい仲間"
+                hint: "相反する気持ちで悩むことです",
+                explanation: "葛藤（かっとう）= 相反する気持ちで悩むこと"
             },
             {
-                question: "次の漢字の読み方を選びなさい：【先生】",
-                options: ["せんせい", "せんじょう", "さきうまれ", "せんしょう"],
-                correct: 0,
-                hint: "教えてくれる人です",
-                explanation: "先生（せんせい）= 教えてくれる人"
+                question: "傍線部の漢字の読み方を答えなさい：将来を【憂慮】している。",
+                options: ["ゆうろ", "うりょ", "ゆりょ", "ゆうりょ"],
+                correct: 3,
+                hint: "心配して思い悩むことです",
+                explanation: "憂慮（ゆうりょ）= 心配して思い悩むこと"
             },
             {
-                question: "次の漢字の読み方を選びなさい：【自然】",
-                options: ["しぜん", "じねん", "しねん", "じぜん"],
+                question: "傍線部の漢字の読み方を答えなさい：目標に向かって【邁進】する。",
+                options: ["まいしん", "まいじん", "ばいしん", "ばいじん"],
                 correct: 0,
-                hint: "人工でないもの",
-                explanation: "自然（しぜん）= 人工でないもの"
+                hint: "目標に向かって勢いよく進むことです",
+                explanation: "邁進（まいしん）= 目標に向かって勢いよく進むこと"
             },
             {
-                question: "次の漢字の読み方を選びなさい：【運動】",
-                options: ["うんどう", "うんてん", "うんそう", "うんゆう"],
+                question: "傍線部の漢字の読み方を答えなさい：他を【凌駕】する実力。",
+                options: ["りんが", "りょうか", "りょうが", "りんか"],
+                correct: 2,
+                hint: "他を上回って優れることです",
+                explanation: "凌駕（りょうが）= 他を上回って優れること"
+            },
+            {
+                question: "傍線部の漢字の読み方を答えなさい：【顕著】な成果を上げた。",
+                options: ["けんちょ", "けんちゃく", "あきらか", "めだつ"],
                 correct: 0,
-                hint: "体を動かすこと",
-                explanation: "運動（うんどう）= 体を動かすこと"
+                hint: "はっきりと目立つことです",
+                explanation: "顕著（けんちょ）= はっきりと目立つこと"
+            },
+            {
+                question: "次の文の【　】に入る漢字を書きなさい：この計画は【スイコウ】が困難だ。",
+                options: ["推考", "遂行", "水行", "垂行"],
+                correct: 1,
+                hint: "物事を最後まで行うことです",
+                explanation: "遂行（すいこう）= 物事を最後まで行うこと"
             }
         ];
+
+        // 中学受験レベル読解問題（偏差値50）
+        const readingProblems = [
+            {
+                passage: `人工知能（AI）の発達により、私たちの生活は大きく変化しています。自動運転車、音声認識システム、画像診断技術など、AIは様々な分野で活用されています。\n\n　しかし、AIの普及には課題もあります。人間の仕事がAIに置き換えられる可能性や、AI技術の誤用による社会への悪影響などが懸念されています。また、AIの判断過程が不透明であることも問題視されています。\n\n　重要なのは、AIを単なる道具として捉え、人間がその使い方を適切に管理することです。AI技術の恩恵を最大限に活用しながら、人間らしさを失わない社会を築いていく必要があります。`,
+                question: "筆者がAIについて最も重要だと考えていることは何ですか。",
+                options: [
+                    "AIの技術をさらに発達させること",
+                    "AIの課題を完全に解決すること",
+                    "人間がAIを適切に管理すること", 
+                    "AIと人間の区別を明確にすること"
+                ],
+                correct: 2,
+                explanation: "第3段落で「人間がその使い方を適切に管理することです」と述べられています"
+            },
+            {
+                passage: `江戸時代の参勤交代制度は、徳川幕府が全国の大名を統制するために設けた制度でした。各藩の大名は、一年おきに江戸と領地を往復し、江戸に滞在中は幕府の監視下に置かれました。\n\n　この制度により、大名たちは多額の費用を交通費や江戸での生活費に費やすことになり、経済力を削がれました。また、大名の家族は江戸に人質として残され、謀反を起こすことが困難になりました。\n\n　一方で、参勤交代により各地の文化や技術の交流が促進され、街道の整備や宿場町の発達にもつながりました。江戸の人口増加や商業の発展にも大きく貢献したのです。`,
+                question: "参勤交代制度の目的として正しいものはどれですか。",
+                options: [
+                    "文化や技術の交流を促進すること",
+                    "街道の整備や宿場町を発達させること",
+                    "江戸の人口を増加させること",
+                    "全国の大名を統制すること"
+                ],
+                correct: 3,
+                explanation: "第1段落で「全国の大名を統制するために設けた制度」と明記されています"
+            },
+            {
+                passage: `地球温暖化は、温室効果ガスの増加によって地球の平均気温が上昇する現象です。その主な原因は、化石燃料の燃焼、森林伐採、工業活動などの人間活動にあります。\n\n　温暖化の影響は深刻です。海面上昇により島国が水没の危機に直面し、異常気象の頻発により農業や生態系に甚大な被害が生じています。また、砂漠化の進行や水資源の枯渇も懸念されています。\n\n　この問題を解決するには、国際的な協力が不可欠です。再生可能エネルギーへの転換、省エネルギー技術の開発、森林保護の推進など、世界各国が連携して取り組む必要があります。私たち一人一人も、日常生活で環境に配慮した行動を心がけることが重要です。`,
+                question: "筆者が地球温暖化問題の解決に最も重要だと考えているものは何ですか。",
+                options: [
+                    "再生可能エネルギーへの転換",
+                    "省エネルギー技術の開発",
+                    "個人の環境配慮行動",
+                    "国際的な協力"
+                ],
+                correct: 3,
+                explanation: "第3段落で「国際的な協力が不可欠です」と最初に述べ、その重要性を強調しています"
+            }
+        ];
+
+        let currentReadingProblem = 0;
+
+        // 読解問題表示
+        function showReadingProblem() {
+            if (currentReadingProblem >= readingProblems.length) {
+                alert('🏆 読解問題完了！\nお疲れさまでした！');
+                goHome();
+                return;
+            }
+
+            const problem = readingProblems[currentReadingProblem];
+            
+            document.getElementById('readingNum').textContent = currentReadingProblem + 1;
+            document.getElementById('passageContainer').textContent = problem.passage;
+            document.getElementById('readingQuestionText').textContent = problem.question;
+            
+            const optionsHTML = problem.options.map((option, index) => 
+                `<button class="option-btn" onclick="checkReadingAnswer(${index})">${index + 1}. ${option}</button>`
+            ).join('');
+            
+            document.getElementById('readingOptionsContainer').innerHTML = optionsHTML;
+            
+            console.log(`📖 読解問題${currentReadingProblem + 1}表示`);
+        }
+
+        // 読解問題答え合わせ
+        function checkReadingAnswer(selected) {
+            const problem = readingProblems[currentReadingProblem];
+            const buttons = document.querySelectorAll('#readingOptionsContainer .option-btn');
+            const isCorrect = selected === problem.correct;
+            
+            if (isCorrect) {
+                buttons[selected].classList.add('correct');
+                score += 20;
+                userData.correctToday++;
+                showResultPopup(true, problem.explanation);
+            } else {
+                buttons[selected].classList.add('incorrect');
+                buttons[problem.correct].classList.add('correct');
+                showResultPopup(false, problem.explanation);
+            }
+            
+            userData.questionsToday++;
+            updateUI();
+            
+            setTimeout(() => {
+                currentReadingProblem++;
+                closeResultPopup();
+                showReadingProblem();
+            }, 3000);
+        }
 
         // 画面切り替え関数
         function showScreen(screenId) {
@@ -337,25 +534,264 @@
             showKanjiQuestion();
         }
 
-        // 読解問題開始
+        // 読解問題開始（中学受験レベル）
         function startReading() {
             console.log('📖 読解問題開始');
-            alert('読解問題機能です。\n現在、漢字練習から始めることをお勧めします。');
-            startKanji();
+            showScreen('readingScreen');
+            showReadingProblem();
         }
+
+        // 中学受験レベル四字熟語・ことわざ問題
+        const vocabularyProblems = [
+            {
+                question: "「臥薪嘗胆」の意味として正しいものを選びなさい。",
+                options: [
+                    "苦労して復讐の機会を待つこと",
+                    "薪の上で寝ること",
+                    "苦い薬を飲むこと", 
+                    "困難な状況に耐えること"
+                ],
+                correct: 0,
+                explanation: "臥薪嘗胆（がしんしょうたん）= 辛い思いをして将来の成功を期すこと"
+            },
+            {
+                question: "「画竜点睛」の意味として正しいものを選びなさい。",
+                options: [
+                    "絵を上手に描くこと",
+                    "最後に大切な部分を仕上げること",
+                    "竜のように強くなること",
+                    "完璧を目指すこと"
+                ],
+                correct: 1,
+                explanation: "画竜点睛（がりょうてんせい）= 仕上げの重要な部分を加えて完成させること"
+            },
+            {
+                question: "「破天荒」の正しい意味を選びなさい。",
+                options: [
+                    "とても激しいこと",
+                    "天気が荒れること",
+                    "今まで誰もしなかったことをすること",
+                    "空が破れること"
+                ],
+                correct: 2,
+                explanation: "破天荒（はてんこう）= 今まで誰もしなかったことを初めてすること"
+            },
+            {
+                question: "「呉越同舟」の意味として正しいものを選びなさい。",
+                options: [
+                    "同じ船に乗ること",
+                    "外国人と一緒に旅行すること",
+                    "仲の悪い者同士が協力すること",
+                    "古い時代の交通手段"
+                ],
+                correct: 2,
+                explanation: "呉越同舟（ごえつどうしゅう）= 仲の悪い者同士が同じ境遇に置かれ、協力せざるを得ないこと"
+            },
+            {
+                question: "「鶏口牛後」の意味として正しいものを選びなさい。",
+                options: [
+                    "鶏の口と牛のしっぽ",
+                    "大きな組織の末端より小さな組織の長",
+                    "動物の順番を表すこと",
+                    "食べ物の好みを表すこと"
+                ],
+                correct: 1,
+                explanation: "鶏口牛後（けいこうぎゅうご）= 大きな集団の末端にいるより、小さな集団でも長になる方がよい"
+            }
+        ];
+
+        let currentVocabProblem = 0;
 
         // 語彙力強化開始
         function startVocab() {
             console.log('💬 語彙力強化開始');
-            alert('語彙力強化機能です。\nことわざや慣用句を学習できます。\n現在準備中のため、漢字練習から始めてください。');
-            startKanji();
+            currentVocabProblem = 0;
+            showScreen('vocabularyScreen');
+            showVocabProblem();
         }
 
-        // AI問題生成開始
+        // 語彙問題表示
+        function showVocabProblem() {
+            if (currentVocabProblem >= vocabularyProblems.length) {
+                alert('🏆 四字熟語・ことわざ完了！\nお疲れさまでした！');
+                goHome();
+                return;
+            }
+
+            const problem = vocabularyProblems[currentVocabProblem];
+            
+            document.getElementById('vocabNum').textContent = currentVocabProblem + 1;
+            document.getElementById('vocabQuestionText').textContent = problem.question;
+            
+            const optionsHTML = problem.options.map((option, index) => 
+                `<button class="option-btn" onclick="checkVocabAnswer(${index})">${index + 1}. ${option}</button>`
+            ).join('');
+            
+            document.getElementById('vocabOptionsContainer').innerHTML = optionsHTML;
+            
+            console.log(`💬 語彙問題${currentVocabProblem + 1}表示`);
+        }
+
+        // 語彙問題答え合わせ
+        function checkVocabAnswer(selected) {
+            const problem = vocabularyProblems[currentVocabProblem];
+            const buttons = document.querySelectorAll('#vocabOptionsContainer .option-btn');
+            const isCorrect = selected === problem.correct;
+            
+            if (isCorrect) {
+                buttons[selected].classList.add('correct');
+                score += 15;
+                userData.correctToday++;
+                showResultPopup(true, problem.explanation);
+            } else {
+                buttons[selected].classList.add('incorrect');
+                buttons[problem.correct].classList.add('correct');
+                showResultPopup(false, problem.explanation);
+            }
+            
+            userData.questionsToday++;
+            updateUI();
+            
+            setTimeout(() => {
+                currentVocabProblem++;
+                closeResultPopup();
+                showVocabProblem();
+            }, 3500);
+        }
+
+        // 中学受験レベル記述問題
+        const writingProblems = [
+            {
+                passage: `科学技術の発達により、私たちの生活は便利になりました。スマートフォンやインターネットにより、世界中の情報を瞬時に得ることができます。しかし、一方で人と人との直接的なコミュニケーションが減少し、デジタル依存という新たな問題も生まれています。`,
+                question: "科学技術の発達がもたらした良い面と問題点について、あなたの考えを80字以内で述べなさい。",
+                maxChars: 80,
+                keyWords: ["便利", "情報", "コミュニケーション", "依存", "問題"],
+                modelAnswer: "科学技術により情報収集が便利になったが、人との直接的な関わりが減り、デジタル依存などの問題も生まれている。"
+            },
+            {
+                passage: `江戸時代の参勤交代制度について学習しました。この制度により、大名の経済力は削がれましたが、一方で文化や技術の交流が促進され、街道や宿場町が発達しました。`,
+                question: "参勤交代制度の影響について、良い面と悪い面を整理して70字以内で説明しなさい。",
+                maxChars: 70,
+                keyWords: ["経済力", "削がれた", "文化交流", "技術", "街道", "発達"],
+                modelAnswer: "大名の経済力を削ぐ一方で、文化・技術交流を促進し、街道整備や宿場町発達をもたらした。"
+            }
+        ];
+
+        let currentWritingProblem = 0;
+
+        // AI問題生成開始（記述問題として実装）
         function startAI() {
-            console.log('🤖 AI問題生成開始');
-            alert('AI問題生成機能です。\nあなたの弱点を分析して最適な問題を出題します。\n現在は漢字練習をお楽しみください。');
-            startKanji();
+            console.log('🤖 記述問題開始');
+            currentWritingProblem = 0;
+            showScreen('writingScreen');
+            showWritingProblem();
+        }
+
+        // 記述問題表示
+        function showWritingProblem() {
+            if (currentWritingProblem >= writingProblems.length) {
+                alert('🏆 記述問題完了！\nお疲れさまでした！');
+                goHome();
+                return;
+            }
+
+            const problem = writingProblems[currentWritingProblem];
+            
+            document.getElementById('writingNum').textContent = currentWritingProblem + 1;
+            document.getElementById('writingPassage').textContent = problem.passage;
+            document.getElementById('writingQuestionText').textContent = problem.question;
+            document.getElementById('maxChars').textContent = problem.maxChars;
+            document.getElementById('writingAnswer').value = '';
+            document.getElementById('charCount').textContent = '0';
+            
+            // 文字数カウント
+            const textarea = document.getElementById('writingAnswer');
+            textarea.addEventListener('input', () => {
+                const count = textarea.value.length;
+                document.getElementById('charCount').textContent = count;
+                
+                if (count > problem.maxChars) {
+                    textarea.style.borderColor = '#f44336';
+                } else {
+                    textarea.style.borderColor = '#90caf9';
+                }
+            });
+            
+            console.log(`✍️ 記述問題${currentWritingProblem + 1}表示`);
+        }
+
+        // 記述問題提出
+        function submitWriting() {
+            const problem = writingProblems[currentWritingProblem];
+            const answer = document.getElementById('writingAnswer').value.trim();
+            
+            if (!answer) {
+                alert('答えを入力してください。');
+                return;
+            }
+            
+            if (answer.length > problem.maxChars) {
+                alert(`制限字数（${problem.maxChars}字）を超えています。`);
+                return;
+            }
+            
+            // 簡易採点
+            let score = 0;
+            let feedback = [];
+            
+            // 字数チェック
+            if (answer.length >= problem.maxChars * 0.8) {
+                score += 3;
+                feedback.push("✅ 適切な字数で書けています");
+            } else {
+                feedback.push("⚠️ もう少し詳しく書きましょう");
+            }
+            
+            // キーワードチェック
+            let keywordCount = 0;
+            problem.keyWords.forEach(keyword => {
+                if (answer.includes(keyword)) {
+                    keywordCount++;
+                }
+            });
+            
+            if (keywordCount >= 3) {
+                score += 4;
+                feedback.push("✅ 重要なキーワードが含まれています");
+            } else if (keywordCount >= 2) {
+                score += 2;
+                feedback.push("⚠️ もう少しキーワードを意識しましょう");
+            } else {
+                feedback.push("❌ 重要なキーワードが不足しています");
+            }
+            
+            // 文章構成チェック
+            if (answer.includes('。') && answer.split('。').length >= 2) {
+                score += 2;
+                feedback.push("✅ 文章が適切に構成されています");
+            }
+            
+            const totalScore = Math.min(score, 10);
+            
+            alert(`📝 記述問題採点結果
+
+点数: ${totalScore}/10点
+
+${feedback.join('\n')}
+
+参考解答:
+${problem.modelAnswer}`);
+            
+            userData.questionsToday++;
+            if (totalScore >= 6) {
+                userData.correctToday++;
+            }
+            updateUI();
+            
+            setTimeout(() => {
+                currentWritingProblem++;
+                showWritingProblem();
+            }, 1000);
         }
 
         // ホーム画面に戻る
@@ -367,7 +803,8 @@
         // 漢字問題表示
         function showKanjiQuestion() {
             if (currentQuestion >= kanjiProblems.length) {
-                showResult();
+                alert('🏆 漢字練習完了！\n中学受験レベルの漢字をよく頑張りました！');
+                goHome();
                 return;
             }
 

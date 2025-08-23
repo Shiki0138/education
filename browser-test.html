@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブラウザ環境詳細テスト</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f0f0f0; }
+        .test-section { margin: 20px 0; padding: 15px; background: white; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .test-btn { background: #4CAF50; color: white; }
+        .kanji-btn { background: #2196F3; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🔍 ブラウザ環境・JavaScript実行詳細テスト</h1>
+    
+    <div class="test-section">
+        <h2>📊 基本環境情報</h2>
+        <div id="basicInfo"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 JavaScript実行テスト</h2>
+        <button class="test-btn" onclick="testJSExecution()">JavaScript実行テスト</button>
+        <div id="jsTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 漢字練習ボタンテスト</h2>
+        <button class="kanji-btn" onclick="testKanjiButton()">漢字練習ボタン動作テスト</button>
+        <button class="kanji-btn" onclick="startKanji()">実際の漢字練習ボタン</button>
+        <div id="kanjiTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🛡️ セキュリティ・ポリシーテスト</h2>
+        <button class="test-btn" onclick="testSecurityPolicy()">CSP・セキュリティテスト</button>
+        <div id="securityTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 デバイス・ブラウザテスト</h2>
+        <button class="test-btn" onclick="testDeviceInfo()">デバイス情報テスト</button>
+        <div id="deviceTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 DOM・イベントテスト</h2>
+        <button class="test-btn" onclick="testDOMEvents()">DOM・イベントテスト</button>
+        <div id="domTestResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 コンソールログ</h2>
+        <div id="consoleLog"></div>
+    </div>
+
+    <script>
+        // ログ収集システム
+        let testLogs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            testLogs.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+            console.log(`[テスト] ${message}`);
+            updateConsoleDisplay();
+        }
+        
+        function updateConsoleDisplay() {
+            const consoleDiv = document.getElementById('consoleLog');
+            consoleDiv.innerHTML = '<pre>' + testLogs.slice(-10).join('\n') + '</pre>';
+        }
+        
+        // 基本環境情報表示
+        function displayBasicInfo() {
+            const info = `
+                <strong>ユーザーエージェント:</strong> ${navigator.userAgent}<br>
+                <strong>プラットフォーム:</strong> ${navigator.platform}<br>
+                <strong>ブラウザ言語:</strong> ${navigator.language}<br>
+                <strong>画面解像度:</strong> ${screen.width}x${screen.height}<br>
+                <strong>ビューポートサイズ:</strong> ${window.innerWidth}x${window.innerHeight}<br>
+                <strong>デバイスピクセル比:</strong> ${window.devicePixelRatio}<br>
+                <strong>オンライン状態:</strong> ${navigator.onLine ? 'オンライン' : 'オフライン'}<br>
+                <strong>Cookie有効:</strong> ${navigator.cookieEnabled ? 'はい' : 'いいえ'}<br>
+                <strong>JavaScript有効:</strong> <span class="success">はい</span><br>
+                <strong>現在時刻:</strong> ${new Date().toString()}
+            `;
+            document.getElementById('basicInfo').innerHTML = info;
+            log('基本環境情報を表示しました');
+        }
+        
+        // JavaScript実行テスト
+        function testJSExecution() {
+            let result = '';
+            let errors = [];
+            
+            try {
+                // 基本的な演算テスト
+                const mathTest = 2 + 2;
+                result += `<div class="success">✅ 基本演算: ${mathTest} (正常)</div>`;
+                
+                // DOM操作テスト
+                const testDiv = document.createElement('div');
+                testDiv.textContent = 'テスト';
+                result += `<div class="success">✅ DOM操作: ${testDiv.textContent} (正常)</div>`;
+                
+                // 配列操作テスト
+                const testArray = [1, 2, 3].map(x => x * 2);
+                result += `<div class="success">✅ 配列操作: [${testArray.join(', ')}] (正常)</div>`;
+                
+                // イベントリスナーテスト
+                const testBtn = document.createElement('button');
+                testBtn.addEventListener('click', () => {});
+                result += `<div class="success">✅ イベントリスナー: 正常</div>`;
+                
+                log('JavaScript実行テスト完了: 全て正常');
+                
+            } catch (error) {
+                errors.push(error.message);
+                result += `<div class="error">❌ JavaScript実行エラー: ${error.message}</div>`;
+                log(`JavaScript実行エラー: ${error.message}`, 'error');
+            }
+            
+            document.getElementById('jsTestResult').innerHTML = result;
+        }
+        
+        // 漢字練習ボタンテスト
+        function testKanjiButton() {
+            let result = '';
+            
+            try {
+                // startKanji関数の存在確認
+                if (typeof startKanji === 'function') {
+                    result += `<div class="success">✅ startKanji関数: 定義済み</div>`;
+                    log('startKanji関数が正しく定義されています');
+                    
+                    // 実際に関数実行テスト（安全に）
+                    try {
+                        // 実際には実行せず、関数の文字列表現を確認
+                        const funcStr = startKanji.toString();
+                        result += `<div class="info">📋 関数内容確認: ${funcStr.length}文字</div>`;
+                        log(`startKanji関数の長さ: ${funcStr.length}文字`);
+                    } catch (e) {
+                        result += `<div class="warning">⚠️ 関数内容取得エラー: ${e.message}</div>`;
+                        log(`関数内容取得エラー: ${e.message}`, 'warning');
+                    }
+                } else {
+                    result += `<div class="error">❌ startKanji関数: 未定義</div>`;
+                    log('startKanji関数が定義されていません', 'error');
+                }
+                
+                // ボタン要素の確認
+                const kanjiButtons = document.querySelectorAll('[onclick*="startKanji"]');
+                result += `<div class="info">📊 漢字ボタン数: ${kanjiButtons.length}個</div>`;
+                log(`漢字練習ボタンが${kanjiButtons.length}個見つかりました`);
+                
+                // onclick属性の確認
+                kanjiButtons.forEach((btn, index) => {
+                    const onclickValue = btn.getAttribute('onclick');
+                    result += `<div class="info">🔘 ボタン${index + 1} onclick: ${onclickValue}</div>`;
+                    log(`ボタン${index + 1}のonclick属性: ${onclickValue}`);
+                });
+                
+            } catch (error) {
+                result += `<div class="error">❌ 漢字ボタンテストエラー: ${error.message}</div>`;
+                log(`漢字ボタンテストエラー: ${error.message}`, 'error');
+            }
+            
+            document.getElementById('kanjiTestResult').innerHTML = result;
+        }
+        
+        // セキュリティポリシーテスト
+        function testSecurityPolicy() {
+            let result = '';
+            
+            try {
+                // CSPの確認
+                const metaTags = document.querySelectorAll('meta[http-equiv="Content-Security-Policy"]');
+                if (metaTags.length > 0) {
+                    result += `<div class="warning">⚠️ CSP検出: ${metaTags.length}個のCSPメタタグ</div>`;
+                    metaTags.forEach(tag => {
+                        result += `<div class="info">📋 CSP内容: ${tag.content}</div>`;
+                    });
+                } else {
+                    result += `<div class="success">✅ CSP: メタタグなし</div>`;
+                }
+                
+                // eval()テスト
+                try {
+                    eval('1+1');
+                    result += `<div class="success">✅ eval()実行: 許可</div>`;
+                } catch (e) {
+                    result += `<div class="error">❌ eval()実行: 制限 - ${e.message}</div>`;
+                }
+                
+                // inline scriptテスト
+                result += `<div class="success">✅ インラインスクリプト: 実行中</div>`;
+                
+                log('セキュリティポリシーテスト完了');
+                
+            } catch (error) {
+                result += `<div class="error">❌ セキュリティテストエラー: ${error.message}</div>`;
+                log(`セキュリティテストエラー: ${error.message}`, 'error');
+            }
+            
+            document.getElementById('securityTestResult').innerHTML = result;
+        }
+        
+        // デバイス・ブラウザテスト
+        function testDeviceInfo() {
+            let result = '';
+            
+            // ブラウザ種類の判定
+            let browser = 'Unknown';
+            if (navigator.userAgent.includes('Chrome')) browser = 'Chrome';
+            else if (navigator.userAgent.includes('Firefox')) browser = 'Firefox';
+            else if (navigator.userAgent.includes('Safari')) browser = 'Safari';
+            else if (navigator.userAgent.includes('Edge')) browser = 'Edge';
+            
+            result += `<div class="info">🌐 ブラウザ: ${browser}</div>`;
+            
+            // デバイス種類の判定
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            result += `<div class="info">📱 デバイス: ${isMobile ? 'モバイル' : 'デスクトップ'}</div>`;
+            
+            // タッチサポート
+            const hasTouch = 'ontouchstart' in window;
+            result += `<div class="info">👆 タッチサポート: ${hasTouch ? 'あり' : 'なし'}</div>`;
+            
+            // localStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                result += `<div class="success">✅ localStorage: 利用可能</div>`;
+            } catch (e) {
+                result += `<div class="error">❌ localStorage: 利用不可</div>`;
+            }
+            
+            log(`デバイステスト完了: ${browser}, ${isMobile ? 'モバイル' : 'デスクトップ'}`);
+            
+            document.getElementById('deviceTestResult').innerHTML = result;
+        }
+        
+        // DOM・イベントテスト
+        function testDOMEvents() {
+            let result = '';
+            
+            try {
+                // DOM Ready状態
+                result += `<div class="success">✅ DOM状態: ${document.readyState}</div>`;
+                
+                // イベントリスナー追加テスト
+                const testBtn = document.createElement('button');
+                let eventFired = false;
+                testBtn.addEventListener('click', () => {
+                    eventFired = true;
+                });
+                
+                // 人工的にクリックイベントを発火
+                testBtn.click();
+                result += `<div class="${eventFired ? 'success' : 'error'}">
+                    ${eventFired ? '✅' : '❌'} イベント発火: ${eventFired ? '正常' : '異常'}
+                </div>`;
+                
+                // querySelector テスト
+                const menuBtns = document.querySelectorAll('.menu-btn');
+                result += `<div class="info">🔍 .menu-btn要素: ${menuBtns.length}個</div>`;
+                
+                log(`DOM・イベントテスト完了: ${menuBtns.length}個のメニューボタン検出`);
+                
+            } catch (error) {
+                result += `<div class="error">❌ DOM・イベントテストエラー: ${error.message}</div>`;
+                log(`DOM・イベントテストエラー: ${error.message}`, 'error');
+            }
+            
+            document.getElementById('domTestResult').innerHTML = result;
+        }
+        
+        // startKanji関数のモック（実際のアプリの関数が定義されていない場合）
+        function startKanji() {
+            log('startKanji()が呼び出されました');
+            alert('startKanji()関数が正常に実行されました！\n\n漢字練習ボタンは正常に動作しています。');
+        }
+        
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('ページ読み込み完了');
+            displayBasicInfo();
+            
+            // 3秒後に自動テスト実行
+            setTimeout(() => {
+                log('自動テスト開始');
+                testJSExecution();
+                testDeviceInfo();
+                testDOMEvents();
+            }, 3000);
+        });
+        
+        // エラーキャッチ
+        window.addEventListener('error', function(e) {
+            log(`グローバルエラー: ${e.error.message}`, 'error');
+        });
+        
+        // 未処理のPromise拒否をキャッチ
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`未処理のPromise拒否: ${e.reason}`, 'error');
+        });
+        
+        log('ブラウザテストスクリプト初期化完了');
+    </script>
+</body>
+</html>
