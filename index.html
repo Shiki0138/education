@@ -3,15 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="中学受験国語学習アプリ - 漢字、読解、語彙力を効率的に学習できる最適化された学習システム">
+    <meta name="keywords" content="中学受験, 国語, 学習アプリ, 漢字, 読解問題, 語彙力">
+    <meta name="theme-color" content="#1976d2">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="中学受験国語学習アプリ開発チーム">
+    <meta property="og:title" content="合格への道 - 国語学習アプリ">
+    <meta property="og:description" content="中学受験対策のための効率的な国語学習システム">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%231976d2'/%3E%3Ctext x='600' y='350' text-anchor='middle' font-size='120' fill='white'%3E📚 合格への道%3C/text%3E%3C/svg%3E">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="合格への道 - 国語学習アプリ">
+    <meta name="twitter:description" content="中学受験対策のための効率的な国語学習システム">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📚%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📚%3C/text%3E%3C/svg%3E">
     <title>合格への道 - 国語学習アプリ</title>
-    <link rel="stylesheet" href="refined-ui.css">
+    <link rel="stylesheet" href="refined-ui.css" media="screen">
+    <link rel="preload" href="enhanced-app.js" as="script">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div id="app">
         <!-- ヘッダー -->
         <header class="header">
             <div class="header-content">
-                <h1 class="app-title">合格への道 📚</h1>
+                <h1 class="app-title" role="banner">
+                    <span class="sr-only">合格への道 中学受験国語学習アプリ</span>
+                    <span aria-hidden="true">合格への道 📚</span>
+                </h1>
                 <div class="user-info">
                     <span class="level-badge">Lv.<span id="userLevel">1</span></span>
                     <span class="streak">🔥 <span id="streakDays">0</span>日連続</span>
@@ -52,23 +71,23 @@
             </div>
 
             <div class="menu-grid">
-                <button class="menu-btn" onclick="startKanjiPractice()">
-                    <span class="menu-icon">📝</span>
+                <button class="menu-btn" onclick="startKanjiPractice()" aria-label="漢字練習を開始 - 基本漢字をマスター">
+                    <span class="menu-icon" aria-hidden="true">📝</span>
                     <span class="menu-title">漢字練習</span>
                     <span class="menu-desc">基本漢字をマスター</span>
                 </button>
-                <button class="menu-btn" onclick="startReading()">
-                    <span class="menu-icon">📖</span>
+                <button class="menu-btn" onclick="startReading()" aria-label="読解問題を開始 - 文章理解力を鍛える">
+                    <span class="menu-icon" aria-hidden="true">📖</span>
                     <span class="menu-title">読解問題</span>
                     <span class="menu-desc">文章理解力を鍛える</span>
                 </button>
-                <button class="menu-btn" onclick="startVocabulary()">
-                    <span class="menu-icon">💬</span>
+                <button class="menu-btn" onclick="startVocabulary()" aria-label="語彙力強化を開始 - ことわざ・慣用句を学習">
+                    <span class="menu-icon" aria-hidden="true">💬</span>
                     <span class="menu-title">語彙力強化</span>
                     <span class="menu-desc">ことわざ・慣用句</span>
                 </button>
-                <button class="menu-btn" onclick="startAIPractice()">
-                    <span class="menu-icon">🤖</span>
+                <button class="menu-btn" onclick="startAIPractice()" aria-label="AI問題生成を開始 - 個人最適化問題">
+                    <span class="menu-icon" aria-hidden="true">🤖</span>
                     <span class="menu-title">AI問題生成</span>
                     <span class="menu-desc">個人最適化問題</span>
                 </button>
@@ -362,28 +381,47 @@
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Critical scripts loaded synchronously -->
+    <script src="system-integration.js"></script>
     <script src="exam-data.js"></script>
-    <script src="mega-kanji-database-1.js"></script>
-    <script src="mega-kanji-database-2.js"></script>
-    <script src="mega-kanji-database-3.js"></script>
-    <script src="mega-kanji-database-4.js"></script>
-    <script src="mega-kanji-database-5.js"></script>
-    <script src="mega-database-final.js"></script>
-    <script src="kanji-supplement.js"></script>
-    <script src="option-randomizer.js"></script>
-    <script src="kanji-grade-data.js"></script>
-    <script src="answer-feedback.js"></script>
-    <script src="incorrect-review.js"></script>
-    <script src="daily-schedule.js"></script>
-    <script src="email-system.js"></script>
-    <script src="generated-reading-problems.js"></script>
-    <script src="generated-grammar-problems.js"></script>
-    <script src="generated-writing-problems.js"></script>
-    <script src="problem-generator.js"></script>
-    <script src="app.js"></script>
     <script src="enhanced-app.js"></script>
     <script src="simple-effects.js"></script>
+    
+    <!-- Non-critical scripts loaded asynchronously -->
+    <script async src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script defer src="mega-kanji-database-1.js"></script>
+    <script defer src="mega-kanji-database-2.js"></script>
+    <script defer src="mega-kanji-database-3.js"></script>
+    <script defer src="mega-kanji-database-4.js"></script>
+    <script defer src="mega-kanji-database-5.js"></script>
+    <script defer src="mega-database-final.js"></script>
+    <script defer src="kanji-supplement.js"></script>
+    <script defer src="option-randomizer.js"></script>
+    <script defer src="kanji-grade-data.js"></script>
+    <script defer src="answer-feedback.js"></script>
+    <script defer src="incorrect-review.js"></script>
+    <script defer src="daily-schedule.js"></script>
+    <script defer src="email-system.js"></script>
+    <script defer src="generated-reading-problems.js"></script>
+    <script defer src="generated-grammar-problems.js"></script>
+    <script defer src="generated-writing-problems.js"></script>
+    <script defer src="problem-generator.js"></script>
+    <script defer src="app.js"></script>
+    <script defer src="test-runner.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+    </script>
 </body>
 </html>
