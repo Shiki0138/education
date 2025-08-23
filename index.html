@@ -802,6 +802,8 @@ ${problem.modelAnswer}`);
 
         // 漢字問題表示
         function showKanjiQuestion() {
+            console.log(`🔢 showKanjiQuestion呼び出し: currentQuestion = ${currentQuestion}`);
+            
             if (currentQuestion >= kanjiProblems.length) {
                 alert('🏆 漢字練習完了！\n中学受験レベルの漢字をよく頑張りました！');
                 goHome();
@@ -809,8 +811,11 @@ ${problem.modelAnswer}`);
             }
 
             const problem = kanjiProblems[currentQuestion];
+            const questionNumber = currentQuestion + 1;
             
-            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            console.log(`📝 問題${questionNumber}を表示中: ${problem.question}`);
+            
+            document.getElementById('questionNum').textContent = questionNumber;
             document.getElementById('questionText').textContent = problem.question;
             
             const optionsHTML = problem.options.map((option, index) => 
@@ -820,34 +825,38 @@ ${problem.modelAnswer}`);
             document.getElementById('optionsContainer').innerHTML = optionsHTML;
             document.getElementById('hintText').style.display = 'none';
             
-            console.log(`📝 問題${currentQuestion + 1}表示: ${problem.question}`);
+            console.log(`✅ 問題${questionNumber}表示完了`);
         }
 
         // 答え合わせ
         function checkAnswer(selected) {
+            const questionBeforeAnswer = currentQuestion;
             const problem = kanjiProblems[currentQuestion];
             const buttons = document.querySelectorAll('.option-btn');
             const isCorrect = selected === problem.correct;
             
-            console.log(`🔍 答え合わせ: 選択=${selected}, 正解=${problem.correct}, 結果=${isCorrect ? '正解' : '不正解'}`);
+            console.log(`🔍 答え合わせ開始: 問題番号=${questionBeforeAnswer + 1}, 選択=${selected}, 正解=${problem.correct}`);
             
             if (isCorrect) {
                 buttons[selected].classList.add('correct');
                 score += 10;
                 userData.correctToday++;
                 showResultPopup(true, problem.explanation);
+                console.log(`✅ 正解！問題${questionBeforeAnswer + 1}完了`);
             } else {
                 buttons[selected].classList.add('incorrect');
                 buttons[problem.correct].classList.add('correct');
                 showResultPopup(false, problem.explanation);
+                console.log(`❌ 不正解。問題${questionBeforeAnswer + 1}完了`);
             }
             
             userData.questionsToday++;
             updateUI();
             
             setTimeout(() => {
-                currentQuestion++;
                 closeResultPopup();
+                currentQuestion++;
+                console.log(`🔢 次の問題へ: currentQuestion = ${currentQuestion - 1} → ${currentQuestion}`);
                 showKanjiQuestion();
             }, 2500);
         }
@@ -874,10 +883,11 @@ ${problem.modelAnswer}`);
             document.getElementById('resultPopup').classList.remove('show');
         }
 
-        // 次の問題
+        // 次の問題（結果ポップアップから呼ばれる - デバッグ版）
         function nextQuestion() {
+            console.log(`🔄 nextQuestion呼び出し: currentQuestion = ${currentQuestion}`);
             closeResultPopup();
-            currentQuestion++;
+            // 注意: currentQuestion++はcheckAnswer内で既に実行済み
             showKanjiQuestion();
         }
 
