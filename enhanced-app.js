@@ -695,22 +695,8 @@ function getPersonalizedLearning() {
     return personalizedLearning;
 }
 
-// 新しい関数を既存のappに統合（遅延初期化対応）
-function startVocabulary() {
-    getVocabularySystem().start();
-}
-
-function showVocabularyHint() {
-    getVocabularySystem().showHint();
-}
-
-function startAIPractice() {
-    getPersonalizedLearning().start();
-}
-
-function generatePersonalizedProblem() {
-    getPersonalizedLearning().generateProblem();
-}
+// enhanced-app.js: 拡張機能のみを提供
+// メイン関数はapp.jsで定義されているため、ここでは重複定義を削除
 
 function startWritingPractice() {
     getWritingSystem().start();

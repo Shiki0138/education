@@ -463,9 +463,12 @@ function showMascotMessage(message) {
     }, 3000);
 }
 
-// 学習開始時の応援
+// 学習開始時の応援（修正版）
 function showStartMotivation() {
-    showMascotMessage("一緒にがんばろう！");
+    // 短縮版メッセージで画面遷移をブロックしない
+    if (typeof showMascotMessage === 'function') {
+        showMascotMessage("がんばろう！");
+    }
 }
 
 // レベルアップ演出

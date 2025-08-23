@@ -87,15 +87,35 @@ let currentKanjiSession = []; // 今回のセッションで出題する問題�
 
 // 漢字練習開始
 function startKanjiPractice() {
+    console.log('🚀 漢字練習開始');
+    
+    // 漢字データベースの存在確認
+    if (!kanjiQuestions || kanjiQuestions.length === 0) {
+        console.error('❌ 漢字データベースが読み込まれていません');
+        alert('漢字問題を読み込み中です。\n少々お待ちください。');
+        
+        // データベース再読み込みを試行
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+        return;
+    }
+    
+    console.log('📚 漢字データベース確認:', kanjiQuestions.length, '問');
+    
+    // 画面切り替え
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('kanjiScreen').classList.add('active');
+    
+    // 初期化
     currentKanjiIndex = 0;
     kanjiScore = 0;
-    consecutiveCorrect = 0; // 連続正解をリセット
+    consecutiveCorrect = 0;
     
-    // 学習開始の応援演出
-    if (typeof showStartMotivation === 'function') {
-        showStartMotivation();
+    // スコア表示を更新
+    const scoreDisplay = document.getElementById('kanjiScore');
+    if (scoreDisplay) {
+        scoreDisplay.textContent = '0';
     }
     
     // 今回のセッション用に10問をランダム選択（重複なし）
@@ -109,17 +129,17 @@ function startKanjiPractice() {
         availableIndices.splice(randomIndex, 1);
     }
     
-    // デバッグ用：セッション問題のログ
-    console.log('今回の漢字セッション問題:', currentKanjiSession);
-    console.log('問題詳細:', currentKanjiSession.map(index => ({
-        index: index,
-        question: kanjiQuestions[index]?.question || '未定義',
-        id: kanjiQuestions[index]?.id || '未定義'
-    })));
+    console.log('📋 選択された問題インデックス:', currentKanjiSession);
     
+    // 学習開始の応援演出（短縮）
+    if (typeof showMascotMessage === 'function') {
+        showMascotMessage("がんばろう！");
+    }
+    
+    // すぐに問題表示（演出を待たない）
     setTimeout(() => {
         showKanjiQuestion();
-    }, 1000); // 応援演出の後に問題表示
+    }, 500); // 0.5秒後に表示
 }
 
 // 漢字問題表示（セッション問題から順次出題）
@@ -434,12 +454,30 @@ function finishReading() {
 
 // 語彙力強化
 function startVocabulary() {
-    alert('語彙力強化モードは現在開発中です！\nことわざ、慣用句、四字熟語などを楽しく学べるようになります。');
+    console.log('🚀 語彙力強化開始');
+    
+    // 語彙システムが読み込まれているかチェック
+    if (typeof vocabularySystem !== 'undefined' && vocabularySystem.start) {
+        vocabularySystem.start();
+    } else {
+        // フォールバック：シンプルな語彙練習
+        alert('ことわざ・慣用句の学習機能です。\n現在準備中です。');
+        console.log('⚠️ 語彙システムが未読み込み、フォールバック実行');
+    }
 }
 
-// 過去問演習
-function showPastExams() {
-    alert('過去問演習は12月から利用可能になります！\n今は基礎力を固めることに集中しましょう。');
+// AI問題生成
+function startAIPractice() {
+    console.log('🚀 AI問題生成開始');
+    
+    // AI システムが読み込まれているかチェック
+    if (typeof personalizedLearning !== 'undefined' && personalizedLearning.start) {
+        personalizedLearning.start();
+    } else {
+        // フォールバック：ランダム問題
+        console.log('⚠️ AIシステム未読み込み、ランダム問題で代替');
+        startKanjiPractice(); // 漢字練習で代替
+    }
 }
 
 // 結果表示
