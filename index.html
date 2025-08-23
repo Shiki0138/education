@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合格への道 - 国語学習アプリ（シンプル版）</title>
+    <title>合格への道 - 中学受験国語アプリ（完全版）</title>
     <style>
         * {
             margin: 0;
@@ -216,6 +216,17 @@
                 <div>📊 今日の進捗: <span id="todayProgress">0/30分</span></div>
                 <div>⭐ ポイント: <span id="totalPoints">0</span>pt</div>
                 <div>🎯 正答率: <span id="accuracy">0</span>%</div>
+                <div>🎚️ 学習レベル: <span id="learningLevel">中級</span></div>
+            </div>
+            
+            <!-- レベル調整ボタン -->
+            <div style="text-align: center; margin-top: 15px;">
+                <button onclick="adjustLearningLevel('down')" style="background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 0 5px;">
+                    📉 易しく
+                </button>
+                <button onclick="adjustLearningLevel('up')" style="background: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 0 5px;">
+                    📈 難しく
+                </button>
             </div>
         </div>
 
@@ -330,9 +341,14 @@
         アプリ状態: <span id="appStatus">読み込み中...</span>
     </div>
 
+    <!-- 大規模漢字データベース -->
+    <script src="large-kanji-database.js"></script>
+    <!-- 動的問題生成エンジン -->
+    <script src="dynamic-problem-engine.js"></script>
+
     <script>
-        // シンプルで確実に動作するコード
-        console.log('🚀 シンプル版アプリ開始');
+        // 高度な動的問題生成システム
+        console.log('🚀 動的問題生成システム開始');
 
         // 基本データ
         let currentQuestion = 0;
@@ -343,8 +359,31 @@
             streak: 0,
             accuracy: 0,
             questionsToday: 0,
-            correctToday: 0
+            correctToday: 0,
+            learningLevel: 'intermediate' // beginner/intermediate/advanced
         };
+
+        // 動的問題生成エンジン初期化
+        let problemEngine = null;
+        // 大規模データベースを使用した真の重複なしシステム
+        let kanjiProblems = [];
+
+        // エンジン初期化関数
+        function initializeProblemEngine() {
+            try {
+                if (typeof LARGE_KANJI_DATABASE !== 'undefined' && typeof DynamicProblemEngine !== 'undefined') {
+                    problemEngine = new DynamicProblemEngine(LARGE_KANJI_DATABASE);
+                    console.log('✅ 動的問題生成エンジン初期化完了');
+                    return true;
+                } else {
+                    console.warn('⚠️ データベースまたはエンジンが未読み込み');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ エンジン初期化エラー:', error);
+                return false;
+            }
+        }
 
         // 中学受験レベル（偏差値50）漢字問題データベース
         const allKanjiProblems = [
@@ -495,115 +534,74 @@
             }
         ];
 
-        // 無限問題生成システム（毎日完全に異なる問題）
-        function generateInfiniteKanjiProblems() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth() + 1;
-            const day = today.getDate();
+        // 新しい動的問題生成システム（大規模データベース対応）
+        function generateAdvancedKanjiProblems() {
+            console.log('🔄 高度な問題生成システム開始...');
             
-            // 年月日を組み合わせたユニークシード（絶対に重複しない）
-            const baseSeed = year * 10000 + month * 100 + day;
-            const problems = [];
-            
-            console.log(`🔄 ${today.toLocaleDateString('ja-JP')}用の問題を動的生成中...`);
-            
-            // 中学受験頻出漢字リスト（30個以上で十分なバリエーション）
-            const kanjiList = [
-                { kanji: "卓越", reading: "たくえつ", meaning: "他より特に優れる" },
-                { kanji: "逸話", reading: "いつわ", meaning: "興味深い話" },
-                { kanji: "謙遜", reading: "けんそん", meaning: "控えめな態度" },
-                { kanji: "洞察", reading: "どうさつ", meaning: "本質を見抜く" },
-                { kanji: "葛藤", reading: "かっとう", meaning: "心の対立" },
-                { kanji: "憂慮", reading: "ゆうりょ", meaning: "心配して悩む" },
-                { kanji: "邁進", reading: "まいしん", meaning: "勢いよく進む" },
-                { kanji: "凌駕", reading: "りょうが", meaning: "他を上回る" },
-                { kanji: "顕著", reading: "けんちょ", meaning: "目立って明らか" },
-                { kanji: "斬新", reading: "ざんしん", meaning: "新しくて驚かせる" },
-                { kanji: "模索", reading: "ぼさく", meaning: "手探りで探す" },
-                { kanji: "端緒", reading: "たんしょ", meaning: "物事の始まり" },
-                { kanji: "簡潔", reading: "かんけつ", meaning: "短くて分かりやすい" },
-                { kanji: "慎重", reading: "しんちょう", meaning: "注意深い" },
-                { kanji: "概念", reading: "がいねん", meaning: "大まかな考え" },
-                { kanji: "慣習", reading: "かんしゅう", meaning: "昔からの習慣" },
-                { kanji: "遵守", reading: "じゅんしゅ", meaning: "規則を守る" },
-                { kanji: "醸成", reading: "じょうせい", meaning: "少しずつ作る" },
-                { kanji: "懸念", reading: "けんねん", meaning: "気がかりに思う" },
-                { kanji: "潜在", reading: "せんざい", meaning: "隠れて存在" },
-                { kanji: "曖昧", reading: "あいまい", meaning: "はっきりしない" },
-                { kanji: "希少", reading: "きしょう", meaning: "めったにない" },
-                { kanji: "堅固", reading: "けんご", meaning: "非常に堅い" },
-                { kanji: "荘厳", reading: "そうごん", meaning: "厳かで立派" },
-                { kanji: "精緻", reading: "せいち", meaning: "細かくて正確" },
-                { kanji: "緻密", reading: "ちみつ", meaning: "細かくて正確" },
-                { kanji: "拙劣", reading: "せつれつ", meaning: "とても下手" },
-                { kanji: "脆弱", reading: "ぜいじゃく", meaning: "もろくて弱い" },
-                { kanji: "偏見", reading: "へんけん", meaning: "偏った見方" },
-                { kanji: "忖度", reading: "そんたく", meaning: "気持ちを推し量る" }
-            ];
-            
-            // ダミー読みリスト
-            const dummyReadings = [
-                "しょうえつ", "たくこし", "たくぜつ", "いちわ", "いつだん", "けんじょう",
-                "きょうそん", "とうさつ", "どうかつ", "かつとう", "くずとう", "ゆうろ",
-                "まいじん", "ばいしん", "りんが", "りょうか", "せんしん", "もさく",
-                "たんちょ", "かんせつ", "しんじゅう", "がいれん", "そんしゅ", "じょうそく",
-                "けねん", "せんだい", "あいばい", "きしゃく", "けんこ", "そうげん"
-            ];
-            
-            for (let i = 0; i < 10; i++) {
-                const problemSeed = baseSeed + i * 1234;
-                
-                // 漢字選択（シード付き）
-                const kanjiIndex = Math.abs(Math.sin(problemSeed) * 10000) % kanjiList.length;
-                const selectedKanji = kanjiList[Math.floor(kanjiIndex)];
-                
-                // ダミー選択肢生成
-                const dummyOptions = [];
-                for (let j = 0; j < 3; j++) {
-                    let dummy;
-                    do {
-                        const dummyIndex = Math.abs(Math.sin(problemSeed + j * 567) * 10000) % dummyReadings.length;
-                        dummy = dummyReadings[Math.floor(dummyIndex)];
-                    } while (dummyOptions.includes(dummy) || dummy === selectedKanji.reading);
-                    dummyOptions.push(dummy);
-                }
-                
-                // 選択肢配列作成
-                const allOptions = [selectedKanji.reading, ...dummyOptions];
-                
-                // 正解位置ランダム化
-                const correctPos = Math.abs(Math.sin(problemSeed + 999) * 10000) % 4;
-                const finalOptions = ['', '', '', ''];
-                finalOptions[Math.floor(correctPos)] = selectedKanji.reading;
-                
-                let dummyIndex = 0;
-                for (let k = 0; k < 4; k++) {
-                    if (finalOptions[k] === '') {
-                        finalOptions[k] = dummyOptions[dummyIndex++];
-                    }
-                }
-                
-                problems.push({
-                    id: `infinite_${baseSeed}_${i}`,
-                    question: `傍線部の漢字の読み方を答えなさい：彼の【${selectedKanji.kanji}】した行動に感心した。`,
-                    options: finalOptions,
-                    correct: Math.floor(correctPos),
-                    hint: `${selectedKanji.meaning}という意味です`,
-                    explanation: `${selectedKanji.kanji}（${selectedKanji.reading}）= ${selectedKanji.meaning}`,
-                    kanjiWord: selectedKanji.kanji,
-                    generatedAt: new Date().toISOString()
-                });
+            if (!problemEngine) {
+                console.warn('⚠️ エンジン未初期化、フォールバック問題を使用');
+                return getFallbackProblems();
             }
             
-            console.log(`✅ ${problems.length}問の完全新規問題生成完了`);
-            console.log(`📝 本日の漢字:`, problems.map(p => p.kanjiWord));
-            
-            return problems;
+            try {
+                // 現在の日付で問題生成
+                const today = new Date();
+                const userLevel = userData.learningLevel || 'intermediate';
+                
+                console.log(`📅 ${today.toLocaleDateString('ja-JP')} - レベル: ${userLevel}`);
+                
+                // 動的問題生成（365日重複なし保証）
+                const problems = problemEngine.generateDailyProblems(today, 10, userLevel);
+                
+                if (problems && problems.length > 0) {
+                    console.log(`✅ ${problems.length}問の高品質問題生成完了`);
+                    console.log('📊 生成された問題:', problems.map(p => ({
+                        kanji: p.kanjiData.kanji,
+                        difficulty: p.difficulty,
+                        type: p.type
+                    })));
+                    
+                    return problems;
+                } else {
+                    throw new Error('問題生成に失敗しました');
+                }
+                
+            } catch (error) {
+                console.error('❌ 問題生成エラー:', error);
+                return getFallbackProblems();
+            }
         }
 
-        // 今日の漢字問題を無限生成で取得
-        const kanjiProblems = generateInfiniteKanjiProblems();
+        // フォールバック問題（エラー時用）
+        function getFallbackProblems() {
+            console.log('🔄 フォールバック問題を使用');
+            
+            const fallbackProblems = [
+                {
+                    id: 'fallback_1',
+                    question: '傍線部の漢字の読み方を答えなさい：彼の【卓越】した技術に驚いた。',
+                    options: ['たくえつ', 'たくこし', 'しょうえつ', 'たくぜつ'],
+                    correct: 0,
+                    hint: '他よりも特に優れるという意味です',
+                    explanation: '卓越（たくえつ）= 他よりも特に優れていること',
+                    kanjiData: { kanji: '卓越', difficulty: 4 },
+                    type: 'reading'
+                },
+                {
+                    id: 'fallback_2',
+                    question: '傍線部の漢字の読み方を答えなさい：【謙遜】して自分の実力を隠した。',
+                    options: ['けんそん', 'けんじょう', 'きょうそん', 'けんしょう'],
+                    correct: 0,
+                    hint: '控えめな態度をとることです',
+                    explanation: '謙遜（けんそん）= 控えめな態度をとること',
+                    kanjiData: { kanji: '謙遜', difficulty: 4 },
+                    type: 'reading'
+                }
+                // 必要に応じてさらに追加
+            ];
+            
+            return fallbackProblems.slice(0, 10);
+        }
 
         // 中学受験レベル読解問題データベース
         const allReadingProblems = [
@@ -1213,6 +1211,73 @@ ${problem.modelAnswer}`);
             document.getElementById('accuracy').textContent = accuracy;
             
             document.getElementById('todayProgress').textContent = `${Math.min(userData.questionsToday * 3, 30)}/30分`;
+            
+            // 学習レベル表示更新
+            const levelNames = {
+                'beginner': '初級',
+                'intermediate': '中級',
+                'advanced': '上級'
+            };
+            const levelElement = document.getElementById('learningLevel');
+            if (levelElement) {
+                levelElement.textContent = levelNames[userData.learningLevel] || '中級';
+            }
+        }
+
+        // 学習レベル調整
+        function adjustLearningLevel(direction) {
+            const levels = ['beginner', 'intermediate', 'advanced'];
+            const currentIndex = levels.indexOf(userData.learningLevel);
+            
+            if (direction === 'up' && currentIndex < levels.length - 1) {
+                userData.learningLevel = levels[currentIndex + 1];
+                console.log(`📈 学習レベルを上げました: ${userData.learningLevel}`);
+            } else if (direction === 'down' && currentIndex > 0) {
+                userData.learningLevel = levels[currentIndex - 1];
+                console.log(`📉 学習レベルを下げました: ${userData.learningLevel}`);
+            } else {
+                console.log('🚫 これ以上レベルを変更できません');
+                return;
+            }
+            
+            // レベル変更後は新しい問題を生成
+            if (problemEngine) {
+                try {
+                    kanjiProblems = generateAdvancedKanjiProblems();
+                    console.log(`🔄 新しいレベル（${userData.learningLevel}）の問題を生成しました`);
+                } catch (error) {
+                    console.error('❌ レベル調整後の問題生成エラー:', error);
+                }
+            }
+            
+            updateUI();
+            
+            // ユーザーに通知
+            const levelNames = {
+                'beginner': '初級（やさしい漢字中心）',
+                'intermediate': '中級（中学受験標準レベル）',
+                'advanced': '上級（難関中学レベル）'
+            };
+            
+            alert(`🎚️ 学習レベルを${levelNames[userData.learningLevel]}に変更しました。\n\n次回の漢字練習から新しいレベルの問題が出題されます。`);
+        }
+
+        // 自動レベル調整（正答率に基づく）
+        function autoAdjustLevel() {
+            if (userData.questionsToday < 5) return; // 最低5問は解いてから調整
+            
+            const accuracy = userData.correctToday / userData.questionsToday;
+            
+            // 正答率が85%以上でレベルアップ
+            if (accuracy >= 0.85 && userData.learningLevel !== 'advanced') {
+                adjustLearningLevel('up');
+                console.log('🤖 正答率が高いため自動でレベルアップしました');
+            }
+            // 正答率が50%以下でレベルダウン
+            else if (accuracy <= 0.50 && userData.learningLevel !== 'beginner') {
+                adjustLearningLevel('down');
+                console.log('🤖 正答率が低いため自動でレベルダウンしました');
+            }
         }
 
         // 結果表示
@@ -1233,27 +1298,54 @@ ${problem.modelAnswer}`);
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ 中学受験対応アプリ読み込み完了');
+            console.log('✅ 動的問題生成システム読み込み開始');
             
-            const today = new Date().toLocaleDateString('ja-JP');
-            console.log(`📅 ${today}の学習問題を準備しました`);
-            console.log(`📝 漢字問題: ${kanjiProblems.length}問（偏差値50レベル）`);
-            console.log(`📖 読解問題: ${readingProblems.length}問（論説文・説明文）`);
-            console.log(`💬 語彙問題: ${vocabularyProblems.length}問（四字熟語・ことわざ）`);
-            
-            document.getElementById('appStatus').textContent = `${today} 中学受験レベル問題準備完了`;
-            updateUI();
-            
-            // 5秒後に動作確認
+            // エンジン初期化を少し遅らせる（依存ファイル読み込み待ち）
             setTimeout(() => {
-                console.log('🔍 5秒後動作確認');
-                const kanjiBtn = document.querySelector('.menu-btn');
-                if (kanjiBtn) {
-                    console.log('✅ 漢字ボタン要素存在確認');
+                const engineReady = initializeProblemEngine();
+                
+                if (typeof generateTodayUniqueProblems === 'function') {
+                    // 真の重複なし問題生成
+                    kanjiProblems = generateTodayUniqueProblems();
+                    console.log('🎯 完全重複なし問題生成完了');
+                    
+                    // 重複チェック実行
+                    if (typeof checkProblemDuplication === 'function') {
+                        const dupCheck = checkProblemDuplication();
+                        console.log(`📊 システム健全性: 重複率${dupCheck.duplicationRate}%`);
+                    }
                 } else {
-                    console.error('❌ 漢字ボタン要素が見つかりません');
+                    // 従来システム使用
+                    kanjiProblems = getBasicProblems();
+                    console.log('⚠️ 基本モードで動作');
                 }
-            }, 5000);
+                
+                const today = new Date().toLocaleDateString('ja-JP');
+                console.log(`📅 ${today}の学習問題準備完了`);
+                console.log(`📝 漢字問題: ${kanjiProblems.length}問（動的生成）`);
+                console.log(`📖 読解問題: ${readingProblems.length}問（論説文・説明文）`);
+                console.log(`💬 語彙問題: ${vocabularyProblems.length}問（四字熟語・ことわざ）`);
+                
+                document.getElementById('appStatus').textContent = `${today} 動的問題生成システム準備完了`;
+                updateUI();
+                
+                // 動作確認
+                setTimeout(() => {
+                    console.log('🔍 システム動作確認');
+                    const kanjiBtn = document.querySelector('.menu-btn');
+                    if (kanjiBtn) {
+                        console.log('✅ UI要素存在確認');
+                        console.log('📊 システム統計:', {
+                            totalProblems: kanjiProblems.length,
+                            engineStatus: problemEngine ? '正常' : 'フォールバック',
+                            databaseSize: window.LARGE_KANJI_DATABASE ? window.LARGE_KANJI_DATABASE.kanjiMaster.length : 'N/A'
+                        });
+                    } else {
+                        console.error('❌ UI要素が見つかりません');
+                    }
+                }, 3000);
+                
+            }, 1000); // 1秒待ってから初期化
         });
 
         // デバッグ用：強制的にボタンを有効化
