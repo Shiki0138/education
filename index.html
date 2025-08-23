@@ -382,33 +382,31 @@
     </div>
 
     <!-- Critical scripts loaded synchronously -->
-    <script src="system-integration.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="exam-data.js"></script>
+    <script src="mega-kanji-database-1.js"></script>
+    <script src="mega-kanji-database-2.js"></script>
+    <script src="mega-kanji-database-3.js"></script>
+    <script src="mega-kanji-database-4.js"></script>
+    <script src="mega-kanji-database-5.js"></script>
+    <script src="mega-database-final.js"></script>
+    <script src="option-randomizer.js"></script>
+    <script src="kanji-grade-data.js"></script>
+    <script src="answer-feedback.js"></script>
+    <script src="incorrect-review.js"></script>
+    <script src="daily-schedule.js"></script>
+    <script src="email-system.js"></script>
+    <script src="generated-reading-problems.js"></script>
+    <script src="generated-grammar-problems.js"></script>
+    <script src="generated-writing-problems.js"></script>
+    <script src="problem-generator.js"></script>
+    <script src="app.js"></script>
     <script src="enhanced-app.js"></script>
     <script src="simple-effects.js"></script>
+    <script src="system-integration.js"></script>
     
     <!-- Non-critical scripts loaded asynchronously -->
-    <script async src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script async src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script defer src="mega-kanji-database-1.js"></script>
-    <script defer src="mega-kanji-database-2.js"></script>
-    <script defer src="mega-kanji-database-3.js"></script>
-    <script defer src="mega-kanji-database-4.js"></script>
-    <script defer src="mega-kanji-database-5.js"></script>
-    <script defer src="mega-database-final.js"></script>
-    <script defer src="kanji-supplement.js"></script>
-    <script defer src="option-randomizer.js"></script>
-    <script defer src="kanji-grade-data.js"></script>
-    <script defer src="answer-feedback.js"></script>
-    <script defer src="incorrect-review.js"></script>
-    <script defer src="daily-schedule.js"></script>
-    <script defer src="email-system.js"></script>
-    <script defer src="generated-reading-problems.js"></script>
-    <script defer src="generated-grammar-problems.js"></script>
-    <script defer src="generated-writing-problems.js"></script>
-    <script defer src="problem-generator.js"></script>
-    <script defer src="app.js"></script>
-    <script defer src="test-runner.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
@@ -417,8 +415,8 @@
             navigator.serviceWorker.register('sw.js')
                 .then(function(registration) {
                     console.log('ServiceWorker registration successful');
-                }, function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
+                }).catch(function(error) {
+                    console.log('ServiceWorker registration failed');
                 });
         });
     }
