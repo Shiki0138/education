@@ -1,9 +1,24 @@
-/* 落ち着いた色合いの小学生向けUIデザイン */
+/* 落ち着いた色合いの小学生向けUIデザイン - アクセシビリティ対応 */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* フォーカス管理 */
+:focus {
+    outline: 3px solid #4285f4;
+    outline-offset: 2px;
+}
+
+/* 動きに敏感なユーザー向け */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 body {
@@ -379,11 +394,39 @@ body {
     color: #1565c0;
 }
 
-.answer-options button:hover {
+.answer-options button:hover,
+.answer-options button:focus {
     background: linear-gradient(135deg, #bbdefb, #e3f2fd);
     border-color: #42a5f5;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+}
+
+/* キーボードナビゲーション対応 */
+.answer-options button:focus {
+    outline: 3px solid #4285f4;
+    outline-offset: 2px;
+}
+
+/* ハイコントラストモード対応 */
+@media (prefers-contrast: high) {
+    .menu-btn, .answer-options button {
+        border-width: 3px;
+        font-weight: bold;
+    }
+}
+
+/* 画面読み上げソフト対応 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .answer-options button.correct {
@@ -709,13 +752,14 @@ body {
     }
 }
 
-/* 成功エフェクト - 上品に */
+/* 成功エフェクト - 上品に & パフォーマンス最適化 */
 .sparkle-effect {
     position: fixed;
     font-size: 20px;
     z-index: 9999;
     pointer-events: none;
     animation: sparkleGentle 1.5s ease-out forwards;
+    will-change: transform, opacity;
 }
 
 @keyframes sparkleGentle {
@@ -766,7 +810,13 @@ body {
     }
 }
 
-/* レスポンシブ対応 */
+/* Touch-friendly デザイン */
+.menu-btn, .answer-options button, .nav-btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* レスポンシブ対応 - モバイル最適化 */
 @media (max-width: 480px) {
     #app {
         max-width: 100%;
@@ -805,4 +855,118 @@ body {
     .feedback-title {
         font-size: 22px;
     }
+}
+
+/* 横向き画面対応 */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .header {
+        padding: 10px 20px;
+    }
+    .app-title {
+        font-size: 20px;
+    }
+    .menu-grid {
+        margin-bottom: 60px;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: #ffffff;
+    }
+    
+    #app {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+    
+    .question-card {
+        background: #3d3d3d;
+        border-color: #555;
+        color: #ffffff;
+    }
+    
+    .answer-options button {
+        background: linear-gradient(135deg, #404040, #555);
+        border-color: #666;
+        color: #ffffff;
+    }
+    
+    .progress-card {
+        background: linear-gradient(135deg, #2a4a2a, #3a5a3a);
+        border-color: #4a6a4a;
+        color: #ffffff;
+    }
+}
+
+/* UX改善のための追加スタイル */
+
+/* スムーズスクロール */
+html {
+    scroll-behavior: smooth;
+}
+
+/* フォーカストラップ（モーダル用） */
+.modal[aria-hidden="false"] {
+    display: flex !important;
+}
+
+.modal[aria-hidden="true"] {
+    display: none !important;
+}
+
+/* ローディング状態 */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px;
+    border: 2px solid transparent;
+    border-top-color: #1976d2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* パフォーマンス最適化 */
+.menu-btn, .answer-options button, .nav-btn {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* 学習進捗可視化改善 */
+.progress-fill {
+    background: linear-gradient(90deg, #4caf50, #66bb6a, #81c784) !important;
+    background-size: 200% 100%;
+    animation: progressShine 2s ease-in-out infinite, progressMove 3s linear infinite;
+}
+
+@keyframes progressMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* 集中モード */
+.focus-mode {
+    filter: blur(2px);
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+
+.focus-mode:not(.focused-element) {
+    opacity: 0.3;
 }

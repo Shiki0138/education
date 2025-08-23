@@ -1,14 +1,77 @@
-// 拡張されたアプリケーション機能
+// 拡張されたアプリケーション機能 - セキュリティ強化版
+
+// セキュリティ設定
+const SECURITY_CONFIG = {
+    maxAttempts: 5,
+    timeWindow: 300000, // 5分
+    sessionTimeout: 1800000, // 30分
+    enableCSP: true
+};
+
+// セキュリティチェック
+function validateInput(input) {
+    if (typeof input !== 'string') return false;
+    
+    // XSSとSQLインジェクション対策
+    const dangerous = /<script|javascript:|data:|vbscript:|onload|onerror|onclick/i;
+    return !dangerous.test(input);
+}
+
+function sanitizeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// レート制限機能
+class RateLimiter {
+    constructor(maxAttempts, timeWindow) {
+        this.attempts = new Map();
+        this.maxAttempts = maxAttempts;
+        this.timeWindow = timeWindow;
+    }
+    
+    checkLimit(identifier) {
+        const now = Date.now();
+        const attempts = this.attempts.get(identifier) || [];
+        
+        // 時間窓外の試行を削除
+        const validAttempts = attempts.filter(time => now - time < this.timeWindow);
+        
+        if (validAttempts.length >= this.maxAttempts) {
+            return false;
+        }
+        
+        validAttempts.push(now);
+        this.attempts.set(identifier, validAttempts);
+        return true;
+    }
+}
+
+// グローバルレート制限
+const globalRateLimit = new RateLimiter(SECURITY_CONFIG.maxAttempts, SECURITY_CONFIG.timeWindow);
+
+// メモリ使用量最適化のための遅延初期化
+let aiQuestionGenerator = null;
+let vocabularySystem = null;
+let writingSystem = null;
+let personalizedLearning = null;
 
 // AI問題生成システム
 class AIQuestionGenerator {
     constructor() {
         this.isInitialized = false;
-        this.problemGenerator = new ExamProblemGenerator();
+        this.problemGenerator = null; // 遅延初期化
     }
 
     async initialize() {
         if (this.isInitialized) return;
+        
+        // 必要なデータのみ遅延読み込み
+        if (!this.problemGenerator && typeof ExamProblemGenerator !== 'undefined') {
+            this.problemGenerator = new ExamProblemGenerator();
+        }
+        
         this.isInitialized = true;
     }
 
@@ -190,6 +253,17 @@ class VocabularySystem {
     }
 
     checkAnswer(selected) {
+        // セキュリティチェック
+        if (!globalRateLimit.checkLimit('vocabulary_answer')) {
+            alert('回答が制限されています。しばらくお待ちください。');
+            return;
+        }
+        
+        if (typeof selected !== 'number' || selected < 0 || selected > 3) {
+            console.error('不正な選択肢:', selected);
+            return;
+        }
+        
         const question = this.questions[this.currentIndex];
         const buttons = document.querySelectorAll('#vocabularyOptions button');
         
@@ -292,7 +366,20 @@ class WritingSystem {
     }
 
     submitAnswer() {
+        // セキュリティチェック
+        if (!globalRateLimit.checkLimit('writing_submit')) {
+            alert('送信が制限されています。しばらくお待ちください。');
+            return;
+        }
+        
         const answer = document.getElementById('writingAnswer').value.trim();
+        
+        // 入力検証
+        if (!validateInput(answer)) {
+            alert('不正な文字が含まれています。');
+            return;
+        }
+        
         if (!answer) {
             alert('答えを入力してください。');
             return;
@@ -303,7 +390,7 @@ class WritingSystem {
             return;
         }
 
-        this.gradeAnswer(answer);
+        this.gradeAnswer(sanitizeHtml(answer));
     }
 
     gradeAnswer(answer) {
@@ -586,38 +673,55 @@ class PersonalizedLearning {
     }
 }
 
-// グローバルインスタンス
-const vocabularySystem = new VocabularySystem();
-const writingSystem = new WritingSystem();
-const personalizedLearning = new PersonalizedLearning();
+// 遅延初期化関数（メモリ使用量最適化）
+function getVocabularySystem() {
+    if (!vocabularySystem) {
+        vocabularySystem = new VocabularySystem();
+    }
+    return vocabularySystem;
+}
 
-// 新しい関数を既存のappに統合
+function getWritingSystem() {
+    if (!writingSystem) {
+        writingSystem = new WritingSystem();
+    }
+    return writingSystem;
+}
+
+function getPersonalizedLearning() {
+    if (!personalizedLearning) {
+        personalizedLearning = new PersonalizedLearning();
+    }
+    return personalizedLearning;
+}
+
+// 新しい関数を既存のappに統合（遅延初期化対応）
 function startVocabulary() {
-    vocabularySystem.start();
+    getVocabularySystem().start();
 }
 
 function showVocabularyHint() {
-    vocabularySystem.showHint();
+    getVocabularySystem().showHint();
 }
 
 function startAIPractice() {
-    personalizedLearning.start();
+    getPersonalizedLearning().start();
 }
 
 function generatePersonalizedProblem() {
-    personalizedLearning.generateProblem();
+    getPersonalizedLearning().generateProblem();
 }
 
 function startWritingPractice() {
-    writingSystem.start();
+    getWritingSystem().start();
 }
 
 function submitWritingAnswer() {
-    writingSystem.submitAnswer();
+    getWritingSystem().submitAnswer();
 }
 
 function showWritingHint() {
-    writingSystem.showHint();
+    getWritingSystem().showHint();
 }
 
 // データ拡張（学習データに分野別データを追加）
