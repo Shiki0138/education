@@ -213,7 +213,7 @@ class DynamicProblemEngine {
     // 1年間重複なしの問題生成
     generateYearLongProblems() {
         const problems = {};
-        const startDate = new Date(2024, 7, 18); // 8月18日開始
+        const startDate = new Date(2025, 7, 24); // 8月24日開始
         
         for (let day = 0; day < 365; day++) {
             const currentDate = new Date(startDate);

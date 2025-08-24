@@ -3,7 +3,7 @@
 class DailyScheduleManager {
     constructor() {
         this.examDate = new Date('2025-01-15'); // 中学入試日
-        this.startDate = new Date('2024-08-18'); // 学習開始日
+        this.startDate = new Date('2025-08-24'); // 学習開始日
         this.totalStudyDays = this.calculateTotalDays();
         this.remainingDays = this.calculateRemainingDays();
         
