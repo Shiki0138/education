@@ -346,6 +346,8 @@
     <script src="large-kanji-database.js"></script>
     <!-- 動的問題生成エンジン -->
     <script src="dynamic-problem-engine.js"></script>
+    <!-- 選択肢重複検証システム -->
+    <script src="option-validator.js"></script>
 
     <script>
         // 高度な動的問題生成システム
@@ -1656,6 +1658,13 @@ ${getStudyAdvice(accuracy)}
                     // 従来システム使用
                     kanjiProblems = getBasicProblems();
                     console.log('⚠️ 基本モードで動作');
+                }
+                
+                // 選択肢重複検証・修正
+                if (typeof ensureUniqueOptions === 'function' && kanjiProblems.length > 0) {
+                    console.log('🛡️ 選択肢重複検証実行中...');
+                    kanjiProblems = ensureUniqueOptions(kanjiProblems);
+                    console.log('✅ 選択肢重複検証完了 - 全選択肢がユニーク');
                 }
                 
                 const today = new Date().toLocaleDateString('ja-JP');
