@@ -1392,6 +1392,146 @@ ${problem.modelAnswer}`);
             }, 2000);
         }
 
+        // メール送信システム
+        function checkAndSendDailyEmail() {
+            const today = new Date().toDateString();
+            const emailSent = localStorage.getItem(`emailSent_${today}`);
+            
+            // 30分達成 または 12問完了 でメール送信
+            const timeGoalAchieved = userData.questionsToday * 3 >= 30;
+            const problemGoalAchieved = userData.questionsToday >= 12;
+            
+            if ((timeGoalAchieved || problemGoalAchieved) && !emailSent) {
+                sendDailyReportEmail();
+                localStorage.setItem(`emailSent_${today}`, 'true');
+                console.log('📧 本日の学習レポートを送信しました');
+            }
+        }
+
+        // 日報メール送信
+        function sendDailyReportEmail() {
+            const today = new Date().toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+
+            const accuracy = userData.questionsToday > 0 
+                ? Math.round((userData.correctToday / userData.questionsToday) * 100) 
+                : 0;
+
+            const reportContent = `
+【${today} 学習レポート】
+
+お疲れさまでした！今日も頑張って学習しました。
+
+━━━━━━━━━━━━━━━━━━━━━━
+📊 今日の学習成果
+━━━━━━━━━━━━━━━━━━━━━━
+🕐 学習時間: ${userData.questionsToday * 3}分
+📝 解いた問題数: ${userData.questionsToday}問
+✅ 正解数: ${userData.correctToday}問
+📈 正答率: ${accuracy}%
+⭐ 獲得ポイント: ${userData.points}pt
+🔥 継続学習: ${userData.streak}日連続
+📊 現在のレベル: Lv.${userData.level}
+
+━━━━━━━━━━━━━━━━━━━━━━
+💡 学習アドバイス
+━━━━━━━━━━━━━━━━━━━━━━
+${getStudyAdvice(accuracy)}
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎯 明日の目標
+━━━━━━━━━━━━━━━━━━━━━━
+・中学受験レベル漢字の継続学習
+・正答率75%以上を目指す
+・毎日30分の集中学習
+・100ポイント達成を目指す
+
+📱 アプリ: https://shiki0138.github.io/education/
+
+━━━━━━━━━━━━━━━━━━━━━━
+「合格への道」学習アプリより自動送信
+送信日時: ${new Date().toLocaleString('ja-JP')}
+━━━━━━━━━━━━━━━━━━━━━━
+            `.trim();
+
+            // メール送信（ブラウザのメールクライアント起動）
+            const subject = `📚【合格への道】${today} 学習レポート`;
+            const body = encodeURIComponent(reportContent);
+            const mailtoUrl = `mailto:greenroom51@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+            
+            // メール送信確認ダイアログ
+            const sendConfirm = confirm(`📧 学習レポートを送信しますか？\n\n送信先: greenroom51@gmail.com\n内容: 今日の学習成果レポート\n\n「OK」でメールクライアントを開きます。`);
+            
+            if (sendConfirm) {
+                window.open(mailtoUrl);
+                
+                // 送信完了通知
+                setTimeout(() => {
+                    showEmailSentNotification();
+                }, 1000);
+                
+                console.log('📧 メールクライアント起動完了');
+            }
+        }
+
+        // アドバイス生成
+        function getStudyAdvice(accuracy) {
+            if (accuracy >= 90) {
+                return "🌟 素晴らしい！完璧に近い正答率です。この調子で難しい問題にも挑戦しましょう。";
+            } else if (accuracy >= 75) {
+                return "😊 とても良い成績です！安定した学習ができています。継続が力になります。";
+            } else if (accuracy >= 60) {
+                return "💪 頑張っています！もう少し復習を増やして理解を深めましょう。";
+            } else if (accuracy >= 40) {
+                return "📚 基礎固めを重視しましょう。焦らず、確実に一歩ずつ進んでいけば必ず向上します。";
+            } else {
+                return "🌱 今日からが本当のスタートです！毎日続けることが何より大切です。応援しています。";
+            }
+        }
+
+        // メール送信完了通知
+        function showEmailSentNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 20px 25px;
+                border-radius: 15px;
+                z-index: 10000;
+                font-size: 16px;
+                font-weight: bold;
+                box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+                animation: slideInRight 0.5s ease-out;
+            `;
+            notification.innerHTML = `
+                📧 メール送信完了！<br>
+                <span style="font-size: 14px; opacity: 0.9;">greenroom51@gmail.com</span>
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { opacity: 0; transform: translateX(100px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+                style.remove();
+            }, 5000);
+        }
+
         // UI更新
         function updateUI() {
             document.getElementById('score').textContent = score;
@@ -1405,6 +1545,9 @@ ${problem.modelAnswer}`);
             document.getElementById('accuracy').textContent = accuracy;
             
             document.getElementById('todayProgress').textContent = `${Math.min(userData.questionsToday * 3, 30)}/30分`;
+            
+            // メール送信チェック（UI更新時に毎回確認）
+            checkAndSendDailyEmail();
             
             // 学習レベル表示更新
             const levelNames = {
