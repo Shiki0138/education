@@ -138,29 +138,77 @@ class TrulyUniqueProblemGenerator {
         return context;
     }
 
-    // 知的ダミー選択肢生成
+    // 完全重複なしダミー選択肢生成
     generateIntelligentDummies(kanji, seed) {
         const dummies = [];
+        const usedOptions = [kanji.reading]; // 正解も重複チェックに含める
+        let attempts = 0;
+        const maxAttempts = 100; // 無限ループ防止
         
-        // 1. 音韻的に似たダミー生成
-        const phoneticDummy = this.generatePhoneticDummy(kanji.reading, seed);
-        if (phoneticDummy) dummies.push(phoneticDummy);
+        console.log(`🎯 ダミー生成開始: 正解「${kanji.reading}」を除外`);
         
-        // 2. 意味的に関連するダミー生成
-        const semanticDummy = this.generateSemanticDummy(kanji, seed + 100);
-        if (semanticDummy) dummies.push(semanticDummy);
-        
-        // 3. 完全ランダムダミー生成
-        while (dummies.length < 3) {
-            const randomIndex = this.seededRandom(seed + dummies.length * 200, 0, this.database.dummyReadings.length - 1);
-            const dummy = this.database.dummyReadings[randomIndex];
+        // 3つの完全にユニークなダミーを生成
+        while (dummies.length < 3 && attempts < maxAttempts) {
+            let dummy = null;
+            attempts++;
             
-            if (!dummies.includes(dummy) && dummy !== kanji.reading) {
+            if (dummies.length === 0) {
+                // 1. 音韻的に似たダミー生成
+                dummy = this.generatePhoneticDummy(kanji.reading, seed + attempts);
+            } else if (dummies.length === 1) {
+                // 2. 意味的に関連するダミー生成
+                dummy = this.generateSemanticDummy(kanji, seed + attempts + 100);
+            } else {
+                // 3. 完全ランダムダミー生成
+                const randomIndex = this.seededRandom(seed + attempts * 200, 0, this.database.dummyReadings.length - 1);
+                dummy = this.database.dummyReadings[randomIndex];
+            }
+            
+            // 重複チェック（正解・既存ダミーとの重複を完全回避）
+            if (dummy && !usedOptions.includes(dummy)) {
                 dummies.push(dummy);
+                usedOptions.push(dummy);
+                console.log(`✅ ダミー${dummies.length}: ${dummy}`);
+            } else if (dummy) {
+                console.log(`❌ 重複発見: ${dummy} - スキップ`);
             }
         }
         
+        // 不足分をフォールバック生成
+        while (dummies.length < 3) {
+            const fallbackDummy = this.generateFallbackDummy(kanji.reading, usedOptions, dummies.length);
+            if (fallbackDummy && !usedOptions.includes(fallbackDummy)) {
+                dummies.push(fallbackDummy);
+                usedOptions.push(fallbackDummy);
+                console.log(`🔄 フォールバックダミー: ${fallbackDummy}`);
+            }
+        }
+        
+        console.log(`🎯 最終選択肢: [${kanji.reading}, ${dummies.join(', ')}]`);
+        
         return dummies.slice(0, 3);
+    }
+
+    // フォールバック用ダミー生成
+    generateFallbackDummy(correctReading, usedOptions, index) {
+        const fallbackOptions = [
+            "あいうえお", "かきくけこ", "さしすせそ", "たちつてと", "なにぬねの",
+            "はひふへほ", "まみむめも", "やゆよ", "らりるれろ", "わをん",
+            "がぎぐげご", "ざじずぜぞ", "だぢづでど", "ばびぶべぼ", "ぱぴぷぺぽ"
+        ];
+        
+        // 正解の文字数に合わせてフォールバック生成
+        const targetLength = correctReading.length;
+        let dummy = fallbackOptions[index % fallbackOptions.length];
+        
+        // 文字数調整
+        if (dummy.length > targetLength) {
+            dummy = dummy.substring(0, targetLength);
+        } else if (dummy.length < targetLength) {
+            dummy = dummy + "う".repeat(targetLength - dummy.length);
+        }
+        
+        return dummy;
     }
 
     // 音韻的ダミー生成
