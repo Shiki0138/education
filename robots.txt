@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: ./sitemap.xml
-
-# Disallow private data files
-Disallow: /master-database.js
-Disallow: /mega-*.js
