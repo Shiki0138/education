@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>追手門学院中学入試対策 総合国語学習システム</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius: 12px;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #fef3c7 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Card Component */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Button Component */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Badge Component */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Progress Component */
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Icon */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+        }
+
+        /* Home Screen */
+        .home-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .study-status-card {
+            grid-column: span 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 2rem;
+            height: 2rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-card {
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 auto 1rem;
+            padding: 0.75rem;
+            background: var(--gray-100);
+            border-radius: 50%;
+        }
+
+        /* Quiz Screen */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-progress {
+            margin-bottom: 2rem;
+        }
+
+        .problem-card {
+            min-height: 400px;
+        }
+
+        .reading-passage {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .reading-passage h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--gray-800);
+        }
+
+        .reading-passage .author {
+            text-align: right;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .reading-passage .text {
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #eff6ff;
+            border-radius: 8px;
+            border: 1px solid #dbeafe;
+        }
+
+        .question-text .highlight {
+            background: #fef3c7;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .choice-button {
+            width: 100%;
+            padding: 1.25rem;
+            text-align: left;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .choice-button:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .choice-button.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .choice-button.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .choice-button.incorrect {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .choice-button:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Result Screen */
+        .result-card {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        /* Category Colors */
+        .category-kanji { 
+            background: #dbeafe; 
+            color: #1e40af; 
+        }
+        
+        .category-reading { 
+            background: #d1fae5; 
+            color: #065f46; 
+        }
+        
+        .category-grammar { 
+            background: #e9d5ff; 
+            color: #6b21a8; 
+        }
+        
+        .category-idiom { 
+            background: #fed7aa; 
+            color: #92400e; 
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .bounce {
+            animation: bounce 1s ease infinite;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .home-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .study-status-card {
+                grid-column: span 2;
+            }
+
+            .choices-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .home-grid {
+                grid-template-columns: 3fr 1fr;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gray-800);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .tooltip:hover .tooltip-content {
+            opacity: 1;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        /* Achievement Animation */
+        .achievement-popup {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 1001;
+        }
+
+        .achievement-popup.show {
+            transform: translateX(0);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 999;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen">
+            <div class="header">
+                <h1>
+                    <span class="icon">📚</span>
+                    追手門学院中学入試対策
+                </h1>
+                <p>総合国語学習システム</p>
+            </div>
+
+            <div class="home-grid">
+                <!-- Today's Study Status -->
+                <div class="card study-status-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">📅</span>
+                            今日の学習状況
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div id="studyStatusContent" class="fade-in">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">📊</span>
+                            学習統計
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">📅</div>
+                                <div class="stat-value" id="totalDays">0</div>
+                                <div class="stat-label">総学習日数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🔥</div>
+                                <div class="stat-value" id="currentStreak">0</div>
+                                <div class="stat-label">連続日数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-value" id="averageScore">0%</div>
+                                <div class="stat-label">平均正解率</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">⭐</div>
+                                <div class="stat-value" id="totalPoints">0P</div>
+                                <div class="stat-label">総ポイント</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Progress -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">💰</span>
+                            報酬進捗
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>次の100円まで</span>
+                                <span id="pointsToNext">0P</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" id="rewardProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #fef3c7; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #92400e;">
+                                ¥<span id="totalEarned">0</span>
+                            </div>
+                            <div style="font-size: 0.875rem; color: #92400e;">獲得済み</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions" style="margin-top: 2rem;">
+                <div class="card action-card" onclick="selectMode('daily')">
+                    <div class="action-icon" style="background: #dbeafe;">
+                        <span class="icon" style="font-size: 1.5rem;">📝</span>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">デイリーチャレンジ</h3>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">
+                        漢字4問・読解3問・文法2問・語彙1問
+                    </p>
+                </div>
+
+                <div class="card action-card" onclick="selectMode('category')">
+                    <div class="action-icon" style="background: #d1fae5;">
+                        <span class="icon" style="font-size: 1.5rem;">📚</span>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">分野別学習</h3>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">
+                        苦手分野を集中特訓
+                    </p>
+                </div>
+
+                <div class="card action-card" onclick="selectMode('exam')">
+                    <div class="action-icon" style="background: #e9d5ff;">
+                        <span class="icon" style="font-size: 1.5rem;">🎓</span>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">模擬試験</h3>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">
+                        50分・100点満点
+                    </p>
+                </div>
+
+                <div class="card action-card" onclick="showDashboard()">
+                    <div class="action-icon" style="background: #fed7aa;">
+                        <span class="icon" style="font-size: 1.5rem;">📊</span>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">学習レポート</h3>
+                    <p style="color: var(--gray-600); font-size: 0.875rem;">
+                        詳細な成績分析
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen" style="display: none;">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <h2 id="quizTitle">総合国語学習</h2>
+                    <button class="btn btn-outline" onclick="exitQuiz()">終了</button>
+                </div>
+
+                <div class="quiz-progress">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span id="progressText">問題 1/10</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <span class="badge" id="categoryBadge">漢字</span>
+                            <span class="badge" id="levelBadge">レベル1</span>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="quizProgress" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <div class="card problem-card">
+                    <div class="card-content">
+                        <div id="problemContent">
+                            <!-- Dynamic problem content -->
+                        </div>
+
+                        <div class="choices-grid" id="choicesGrid">
+                            <!-- Dynamic choices -->
+                        </div>
+
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button class="btn btn-primary btn-lg" id="submitButton" onclick="submitAnswer()" disabled>
+                                回答する
+                            </button>
+                        </div>
+
+                        <div id="feedbackArea" style="display: none; margin-top: 2rem;">
+                            <!-- Feedback content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="screen" style="display: none;">
+            <div class="card result-card">
+                <div id="resultContent">
+                    <!-- Dynamic result content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div id="achievementPopup" class="achievement-popup">
+        <div class="achievement-icon" id="achievementIcon">🏆</div>
+        <div>
+            <h3 id="achievementTitle">実績獲得！</h3>
+            <p id="achievementDesc">説明</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="large-kanji-database.js"></script>
+    <script src="comprehensive-study-system.js"></script>
+    <script src="reward-system.js"></script>
+    <script src="option-validator.js"></script>
+    
+    <script>
+        // Global variables
+        let currentMode = 'daily';
+        let currentProblems = [];
+        let currentProblemIndex = 0;
+        let currentSession = null;
+        let selectedAnswer = null;
+        let isSubmitted = false;
+        let sessionResults = [];
+        
+        // Initialize systems
+        const comprehensiveSystem = new ComprehensiveJapaneseSystem();
+        const rewardSystem = new KanjiRewardSystem();
+        const optionValidator = new OptionValidator();
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHomeScreen();
+            checkDailyStatus();
+        });
+        
+        // Update home screen
+        function updateHomeScreen() {
+            const stats = rewardSystem.getStatistics();
+            
+            // Update statistics
+            document.getElementById('totalDays').textContent = stats.totalDays;
+            document.getElementById('currentStreak').textContent = stats.currentStreak;
+            document.getElementById('averageScore').textContent = stats.averageScore + '%';
+            document.getElementById('totalPoints').textContent = stats.totalPoints + 'P';
+            
+            // Update reward progress
+            const pointsToNext = 100 - (stats.totalPoints % 100);
+            const progress = ((stats.totalPoints % 100) / 100) * 100;
+            
+            document.getElementById('pointsToNext').textContent = pointsToNext + 'P';
+            document.getElementById('rewardProgress').style.width = progress + '%';
+            document.getElementById('totalEarned').textContent = stats.totalEarned;
+        }
+        
+        // Check if today's study is completed
+        function checkDailyStatus() {
+            const today = new Date().toISOString().split('T')[0];
+            const dailyResults = rewardSystem.pointsData.dailyResults || [];
+            const todayResult = dailyResults.find(r => r.date === today);
+            
+            const statusContent = document.getElementById('studyStatusContent');
+            
+            if (todayResult) {
+                statusContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-bottom: 1rem;">
+                            今日の学習完了！
+                        </h3>
+                        <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                            正解率: ${todayResult.correctRate}% (${todayResult.correctCount}/10問)
+                        </p>
+                        <div class="badge badge-success" style="font-size: 1rem;">
+                            +${todayResult.totalPoints}ポイント獲得
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 5rem; margin-bottom: 1rem;">📚</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem;">
+                            今日の学習を始めましょう
+                        </h3>
+                        <p style="color: var(--gray-600); margin-bottom: 2rem;">
+                            10問の総合問題に挑戦して、国語力を高めよう！
+                        </p>
+                        <button class="btn btn-primary btn-lg" onclick="startDailyChallenge()">
+                            <span class="icon">▶️</span>
+                            学習スタート
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Select learning mode
+        function selectMode(mode) {
+            currentMode = mode;
+            
+            if (mode === 'daily') {
+                startDailyChallenge();
+            } else if (mode === 'category') {
+                showCategorySelection();
+            } else if (mode === 'exam') {
+                startMockExam();
+            }
+        }
+        
+        // Start daily challenge
+        function startDailyChallenge() {
+            currentProblems = comprehensiveSystem.generateDailyChallenge(new Date());
+            currentProblemIndex = 0;
+            sessionResults = [];
+            
+            showQuizScreen();
+            displayProblem();
+        }
+        
+        // Show quiz screen
+        function showQuizScreen() {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            document.getElementById('resultScreen').style.display = 'none';
+        }
+        
+        // Display current problem
+        function displayProblem() {
+            const problem = currentProblems[currentProblemIndex];
+            selectedAnswer = null;
+            isSubmitted = false;
+            
+            // Update progress
+            document.getElementById('progressText').textContent = `問題 ${currentProblemIndex + 1}/${currentProblems.length}`;
+            document.getElementById('quizProgress').style.width = ((currentProblemIndex + 1) / currentProblems.length * 100) + '%';
+            
+            // Update badges
+            updateCategoryBadge(problem.category);
+            updateLevelBadge(problem.level);
+            
+            // Display problem content
+            const contentDiv = document.getElementById('problemContent');
+            contentDiv.innerHTML = renderProblemContent(problem);
+            
+            // Display choices
+            const choicesDiv = document.getElementById('choicesGrid');
+            choicesDiv.innerHTML = '';
+            
+            problem.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'choice-button';
+                button.textContent = option;
+                button.onclick = () => selectChoice(index);
+                choicesDiv.appendChild(button);
+            });
+            
+            // Reset submit button
+            const submitBtn = document.getElementById('submitButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '回答する';
+            
+            // Hide feedback
+            document.getElementById('feedbackArea').style.display = 'none';
+        }
+        
+        // Render problem content based on type
+        function renderProblemContent(problem) {
+            if (problem.type === 'reading_comprehension' || problem.type === 'narrative_reading') {
+                return `
+                    <div class="reading-passage">
+                        <h3>${problem.passage.title}</h3>
+                        <div class="text">${problem.passage.text}</div>
+                    </div>
+                    <div class="question-text">
+                        ${problem.question}
+                    </div>
+                `;
+            } else if (problem.type === 'poetry_appreciation') {
+                return `
+                    <div class="reading-passage">
+                        <div class="text" style="text-align: center; font-size: 1.25rem;">
+                            ${problem.content.text}
+                        </div>
+                        <div class="author">― ${problem.content.author}</div>
+                    </div>
+                    <div class="question-text">
+                        ${problem.question}
+                    </div>
+                `;
+            } else {
+                const questionHtml = problem.question.replace(/【(.+?)】/g, '<span class="highlight">$1</span>');
+                return `
+                    <div class="question-text" style="text-align: center;">
+                        ${questionHtml}
+                    </div>
+                `;
+            }
+        }
+        
+        // Update category badge
+        function updateCategoryBadge(category) {
+            const badge = document.getElementById('categoryBadge');
+            badge.textContent = category;
+            badge.className = 'badge';
+            
+            if (category.includes('漢字')) {
+                badge.classList.add('category-kanji');
+            } else if (category.includes('読解')) {
+                badge.classList.add('category-reading');
+            } else if (category.includes('文法')) {
+                badge.classList.add('category-grammar');
+            } else {
+                badge.classList.add('category-idiom');
+            }
+        }
+        
+        // Update level badge
+        function updateLevelBadge(level) {
+            const badge = document.getElementById('levelBadge');
+            const levelText = ['', '基礎', '標準', '応用', '発展'][level];
+            badge.textContent = `レベル${level} ${levelText}`;
+            
+            badge.className = 'badge';
+            if (level === 1) badge.classList.add('badge-success');
+            else if (level === 2) badge.classList.add('badge-primary');
+            else if (level === 3) badge.classList.add('badge-warning');
+            else badge.classList.add('badge-danger');
+        }
+        
+        // Select choice
+        function selectChoice(index) {
+            if (isSubmitted) return;
+            
+            selectedAnswer = index;
+            
+            // Update UI
+            const choices = document.querySelectorAll('.choice-button');
+            choices.forEach((btn, i) => {
+                btn.classList.remove('selected');
+                if (i === index) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            // Enable submit button
+            document.getElementById('submitButton').disabled = false;
+        }
+        
+        // Submit answer
+        function submitAnswer() {
+            if (selectedAnswer === null || isSubmitted) return;
+            
+            isSubmitted = true;
+            const problem = currentProblems[currentProblemIndex];
+            const isCorrect = selectedAnswer === problem.correct;
+            
+            // Record result
+            sessionResults.push({
+                problemId: problem.id || currentProblemIndex,
+                correct: isCorrect,
+                category: problem.category
+            });
+            
+            // Update UI
+            const choices = document.querySelectorAll('.choice-button');
+            choices.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === problem.correct) {
+                    btn.classList.add('correct');
+                } else if (i === selectedAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            showFeedback(isCorrect, problem);
+            
+            // Update submit button
+            const submitBtn = document.getElementById('submitButton');
+            if (currentProblemIndex < currentProblems.length - 1) {
+                submitBtn.textContent = '次の問題へ';
+                submitBtn.onclick = nextProblem;
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.textContent = '結果を見る';
+                submitBtn.onclick = showResults;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Show feedback
+        function showFeedback(isCorrect, problem) {
+            const feedbackArea = document.getElementById('feedbackArea');
+            feedbackArea.style.display = 'block';
+            
+            const feedbackHtml = `
+                <div style="text-align: center; padding: 1.5rem; border-radius: 8px; 
+                     background: ${isCorrect ? '#d1fae5' : '#fee2e2'}; 
+                     border: 1px solid ${isCorrect ? '#86efac' : '#fca5a5'};">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">
+                        ${isCorrect ? '🎉' : '😢'}
+                    </div>
+                    <h3 style="color: ${isCorrect ? '#065f46' : '#991b1b'}; margin-bottom: 0.5rem;">
+                        ${isCorrect ? '正解です！' : '残念...'}
+                    </h3>
+                    ${!isCorrect ? `<p>正解は「${problem.options[problem.correct]}」です</p>` : ''}
+                    ${problem.explanation ? `
+                        <div style="margin-top: 1rem; padding: 1rem; background: white; 
+                             border-radius: 6px; text-align: left;">
+                            <strong>解説:</strong> ${problem.explanation}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            feedbackArea.innerHTML = feedbackHtml;
+        }
+        
+        // Next problem
+        function nextProblem() {
+            currentProblemIndex++;
+            displayProblem();
+        }
+        
+        // Show results
+        function showResults() {
+            const correctCount = sessionResults.filter(r => r.correct).length;
+            const accuracy = Math.round((correctCount / sessionResults.length) * 100);
+            
+            // Calculate points
+            const result = rewardSystem.recordDailyResult(new Date(), correctCount);
+            
+            // Show result screen
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+                <div class="result-icon">${accuracy >= 80 ? '🏆' : accuracy >= 60 ? '😊' : '💪'}</div>
+                <h2 class="result-title">学習完了！</h2>
+                <p style="font-size: 1.25rem; color: var(--gray-600); margin-bottom: 2rem;">
+                    ${result.encouragement}
+                </p>
+                
+                <div class="result-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${correctCount}/${sessionResults.length}</div>
+                        <div class="stat-label">正解数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${accuracy}%</div>
+                        <div class="stat-label">正解率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">+${result.details.todayPoints}P</div>
+                        <div class="stat-label">獲得ポイント</div>
+                    </div>
+                </div>
+                
+                ${result.special ? `
+                    <div style="margin-top: 2rem; padding: 1rem; background: #fef3c7; 
+                         border-radius: 8px; text-align: center;">
+                        <p style="font-size: 1.125rem; font-weight: 500; color: #92400e;">
+                            ${result.special}
+                        </p>
+                    </div>
+                ` : ''}
+                
+                <div style="margin-top: 2rem;">
+                    <button class="btn btn-primary btn-lg" onclick="backToHome()">
+                        ホームに戻る
+                    </button>
+                </div>
+            `;
+            
+            // Check for 100 yen achievement
+            if (Math.floor((result.details.currentTotal - result.details.todayPoints) / 100) < Math.floor(result.details.currentTotal / 100)) {
+                setTimeout(() => show100YenAnimation(), 1000);
+            }
+            
+            // Check for achievements
+            const achievements = rewardSystem.checkAchievements(result);
+            if (achievements.length > 0) {
+                achievements.forEach((ach, index) => {
+                    setTimeout(() => showAchievement(ach), 2000 + index * 1500);
+                });
+            }
+        }
+        
+        // Back to home
+        function backToHome() {
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('homeScreen').style.display = 'block';
+            updateHomeScreen();
+            checkDailyStatus();
+        }
+        
+        // Exit quiz
+        function exitQuiz() {
+            if (confirm('学習を中断しますか？\n進捗は保存されません。')) {
+                backToHome();
+            }
+        }
+        
+        // Show achievement
+        function showAchievement(achievement) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementIcon').textContent = achievement.icon;
+            document.getElementById('achievementTitle').textContent = achievement.name;
+            document.getElementById('achievementDesc').textContent = achievement.description;
+            
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 100 yen animation
+        function show100YenAnimation() {
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                createConfetti();
+            }
+            
+            // Show special message
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 3rem;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                text-align: center;
+                z-index: 1002;
+            `;
+            message.innerHTML = `
+                <div style="font-size: 5rem; margin-bottom: 1rem;">💰</div>
+                <h2 style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;">100円ゲット！</h2>
+                <p style="color: var(--gray-600);">おめでとう！よく頑張りました！</p>
+            `;
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }
+        
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
+        }
+        
+        // Show category selection (placeholder)
+        function showCategorySelection() {
+            alert('分野別学習モードは準備中です');
+        }
+        
+        // Start mock exam (placeholder)
+        function startMockExam() {
+            alert('模擬試験モードは準備中です');
+        }
+        
+        // Show dashboard (placeholder)
+        function showDashboard() {
+            alert('学習レポートは準備中です');
+        }
+    </script>
+</body>
+</html>
