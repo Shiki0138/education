@@ -18,6 +18,11 @@ class ComprehensiveJapaneseSystem {
             FOUR_CHARACTER_IDIOM: 'four_character_idiom'
         };
         
+        // 読解問題動的生成システムの初期化
+        if (typeof ReadingPassageGenerator !== 'undefined') {
+            this.readingGenerator = new ReadingPassageGenerator();
+        }
+        
         this.initializeDatabase();
     }
 
@@ -305,9 +310,9 @@ class ComprehensiveJapaneseSystem {
         problems.push(...this.generateKanjiWritingProblems(1, userLevel)); // 書き1問
         problems.push(...this.generateHomophoneProblems(1, userLevel)); // 同音異義語1問
         
-        // 2. 読解問題（3問）
-        problems.push(...this.generateReadingProblems(2, userLevel)); // 説明文1、物語文1
-        problems.push(...this.generatePoetryProblems(1, userLevel)); // 詩歌1問
+        // 2. 読解問題（3問） - 日付を渡して動的生成
+        problems.push(...this.generateReadingProblems(2, userLevel, date)); // 説明文1、物語文1
+        problems.push(...this.generatePoetryProblems(1, userLevel, date)); // 詩歌1問
         
         // 3. 文法問題（2問）
         problems.push(...this.generateGrammarProblems(2, userLevel));
@@ -391,64 +396,96 @@ class ComprehensiveJapaneseSystem {
     }
 
     // 読解問題生成
-    generateReadingProblems(count, level) {
+    generateReadingProblems(count, level, date = new Date()) {
+        // 動的生成システムを使用
+        if (this.readingGenerator) {
+            return this.readingGenerator.generateDailyReadingProblems(date, count, level);
+        }
+        
+        // フォールバック: 既存のデータベースから生成
         const problems = [];
         
         // 説明文
-        const expText = this.selectRandom(this.readingDatabase.explanatory.filter(r => 
+        const expTexts = this.readingDatabase.explanatory.filter(r => 
             Math.abs(r.level - level) <= 1
-        ));
-        if (expText) {
-            const question = this.selectRandom(expText.questions);
-            problems.push({
-                type: this.problemTypes.READING_COMPREHENSION,
-                passage: {
-                    title: expText.title,
-                    text: expText.text,
-                    wordCount: expText.wordCount
-                },
-                question: question.q,
-                options: question.options,
-                correct: question.correct,
-                level: expText.level,
-                category: '説明文読解'
-            });
-        }
+        );
         
         // 物語文
-        const narText = this.selectRandom(this.readingDatabase.narrative.filter(r => 
+        const narTexts = this.readingDatabase.narrative.filter(r => 
             Math.abs(r.level - level) <= 1
-        ));
-        if (narText) {
-            const question = this.selectRandom(narText.questions);
-            problems.push({
-                type: this.problemTypes.NARRATIVE_READING,
-                passage: {
-                    title: narText.title,
-                    text: narText.text,
-                    wordCount: narText.wordCount
-                },
-                question: question.q,
-                options: question.options,
-                correct: question.correct,
-                level: narText.level,
-                category: '物語文読解'
-            });
+        );
+        
+        // 説明文と物語文を交互に追加
+        let expIndex = 0;
+        let narIndex = 0;
+        
+        for (let i = 0; i < count; i++) {
+            if (i % 2 === 0 && expIndex < expTexts.length) {
+                // 説明文を追加
+                const expText = expTexts[expIndex % expTexts.length];
+                const questionIndex = i % expText.questions.length;
+                const question = expText.questions[questionIndex];
+                
+                problems.push({
+                    type: this.problemTypes.READING_COMPREHENSION,
+                    passage: {
+                        title: expText.title,
+                        text: expText.text,
+                        wordCount: expText.wordCount
+                    },
+                    question: question.q,
+                    options: question.options,
+                    correct: question.correct,
+                    level: expText.level,
+                    category: '文章読解'
+                });
+                expIndex++;
+            } else if (narIndex < narTexts.length) {
+                // 物語文を追加
+                const narText = narTexts[narIndex % narTexts.length];
+                const questionIndex = i % narText.questions.length;
+                const question = narText.questions[questionIndex];
+                
+                problems.push({
+                    type: this.problemTypes.NARRATIVE_READING,
+                    passage: {
+                        title: narText.title,
+                        text: narText.text,
+                        wordCount: narText.wordCount
+                    },
+                    question: question.q,
+                    options: question.options,
+                    correct: question.correct,
+                    level: narText.level,
+                    category: '文章読解'
+                });
+                narIndex++;
+            }
         }
         
-        return problems.slice(0, count);
+        return problems;
     }
 
     // 詩歌問題生成
-    generatePoetryProblems(count, level) {
+    generatePoetryProblems(count, level, date = new Date()) {
+        // 動的生成システムを使用
+        if (this.readingGenerator) {
+            return this.readingGenerator.generateDailyPoetryProblems(date, count, level);
+        }
+        
+        // フォールバック: 既存のデータベースから生成
         const problems = [];
         const poems = this.readingDatabase.poetry.filter(p => 
             p.questions[0] && Math.abs(p.level - level) <= 1
         );
         
-        for (let i = 0; i < count && i < poems.length; i++) {
-            const poem = poems[i];
-            const question = poem.questions[0];
+        // 必要数だけ問題を生成
+        for (let i = 0; i < count; i++) {
+            const poemIndex = i % poems.length;
+            const poem = poems[poemIndex];
+            const questionIndex = i % poem.questions.length;
+            const question = poem.questions[questionIndex];
+            
             problems.push({
                 type: this.problemTypes.POETRY_APPRECIATION,
                 content: {
@@ -460,7 +497,7 @@ class ComprehensiveJapaneseSystem {
                 options: question.options,
                 correct: question.correct,
                 level: poem.level,
-                category: '詩歌鑑賞'
+                category: '文章読解'
             });
         }
         
@@ -504,8 +541,10 @@ class ComprehensiveJapaneseSystem {
             Math.abs(i.level - level) <= 1
         );
         
+        // 必要数だけ問題を生成
         for (let i = 0; i < count; i++) {
-            const idiom = this.selectRandom(idioms);
+            const idiomIndex = i % idioms.length;
+            const idiom = idioms[idiomIndex];
             problems.push({
                 type: this.problemTypes.PROVERB_MEANING,
                 question: `「${idiom.phrase}」の意味として正しいものを選びなさい。`,

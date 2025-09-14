@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問題生成テスト</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .problem-count {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .category {
+            background: #e0e0ff;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>問題生成テスト</h1>
+    
+    <div>
+        <button onclick="testDailyChallenge()">日次チャレンジテスト</button>
+        <button onclick="testReadingProblems()">読解問題テスト</button>
+        <button onclick="testPoetryProblems()">詩歌問題テスト</button>
+        <button onclick="testAllCategories()">全カテゴリーテスト</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <!-- Scripts -->
+    <script src="large-kanji-database.js"></script>
+    <script src="reading-passage-generator.js"></script>
+    <script src="comprehensive-study-system.js"></script>
+    
+    <script>
+        const system = new ComprehensiveJapaneseSystem();
+        const resultsDiv = document.getElementById('results');
+        
+        function testDailyChallenge() {
+            resultsDiv.innerHTML = '<h2>日次チャレンジ問題生成テスト</h2>';
+            
+            try {
+                const problems = system.generateDailyChallenge(new Date());
+                displayResults('日次チャレンジ', problems);
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="error">エラー: ${error.message}</div>`;
+                console.error(error);
+            }
+        }
+        
+        function testReadingProblems() {
+            resultsDiv.innerHTML = '<h2>読解問題生成テスト</h2>';
+            
+            try {
+                const problems = system.generateReadingProblems(5, 2, new Date());
+                displayResults('読解問題', problems);
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="error">エラー: ${error.message}</div>`;
+                console.error(error);
+            }
+        }
+        
+        function testPoetryProblems() {
+            resultsDiv.innerHTML = '<h2>詩歌問題生成テスト</h2>';
+            
+            try {
+                const problems = system.generatePoetryProblems(3, 2, new Date());
+                displayResults('詩歌問題', problems);
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="error">エラー: ${error.message}</div>`;
+                console.error(error);
+            }
+        }
+        
+        function testAllCategories() {
+            resultsDiv.innerHTML = '<h2>全カテゴリー問題生成テスト</h2>';
+            
+            const categories = [
+                { name: '漢字読み', method: 'generateKanjiProblems', count: 3 },
+                { name: '漢字書き', method: 'generateKanjiWritingProblems', count: 2 },
+                { name: '同音異義語', method: 'generateHomophoneProblems', count: 2 },
+                { name: '読解', method: 'generateReadingProblems', count: 3 },
+                { name: '詩歌', method: 'generatePoetryProblems', count: 2 },
+                { name: '文法', method: 'generateGrammarProblems', count: 3 },
+                { name: 'ことわざ', method: 'generateIdiomProblems', count: 2 }
+            ];
+            
+            categories.forEach(cat => {
+                try {
+                    const date = new Date();
+                    const problems = cat.method.includes('Reading') || cat.method.includes('Poetry') 
+                        ? system[cat.method](cat.count, 2, date)
+                        : system[cat.method](cat.count, 2);
+                    
+                    resultsDiv.innerHTML += `<h3>${cat.name}</h3>`;
+                    displayResults(cat.name, problems);
+                } catch (error) {
+                    resultsDiv.innerHTML += `<div class="error">${cat.name}でエラー: ${error.message}</div>`;
+                    console.error(error);
+                }
+            });
+        }
+        
+        function displayResults(title, problems) {
+            const categoryCount = {};
+            
+            problems.forEach(problem => {
+                const cat = problem.category || 'その他';
+                categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+            });
+            
+            let html = `<div class="problem-count">`;
+            html += `<div class="success">✓ ${title}: ${problems.length}問生成成功</div>`;
+            html += `<div>カテゴリー別内訳:</div>`;
+            
+            Object.entries(categoryCount).forEach(([cat, count]) => {
+                html += `<div class="category">${cat}: ${count}問</div>`;
+            });
+            
+            html += `</div>`;
+            
+            // 最初の問題の詳細を表示
+            if (problems.length > 0) {
+                html += `<details>`;
+                html += `<summary>最初の問題の詳細</summary>`;
+                html += `<pre>${JSON.stringify(problems[0], null, 2)}</pre>`;
+                html += `</details>`;
+            }
+            
+            // 読解問題の場合、文章も表示
+            const readingProblem = problems.find(p => p.type === 'reading_comprehension' || p.type === 'narrative_reading');
+            if (readingProblem && readingProblem.passage) {
+                html += `<details>`;
+                html += `<summary>読解文章サンプル</summary>`;
+                html += `<div style="background: #fff; padding: 10px; border: 1px solid #ddd;">`;
+                html += `<h4>${readingProblem.passage.title}</h4>`;
+                html += `<p>${readingProblem.passage.text.substring(0, 200)}...</p>`;
+                html += `</div>`;
+                html += `</details>`;
+            }
+            
+            resultsDiv.innerHTML += html;
+        }
+        
+        // ページ読み込み時に自動テスト
+        window.onload = () => {
+            testDailyChallenge();
+        };
+    </script>
+</body>
+</html>
